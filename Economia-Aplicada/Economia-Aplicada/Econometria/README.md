@@ -68,10 +68,3 @@ resolvido pelas equações de Hamilton–Jacobi–Bellman e Kolmogorov, com risc
 desemprego e desigualdade calibrados com a PNAD Contínua) para mostrar quem
 ganha e quem perde. A [nota técnica](Python/macroeconomia/equilibrio_geral/nota_tecnica.pdf)
 traz a derivação completa.
-
-## Uso de IA
-
-O desenvolvimento deste projeto contou com o apoio de ferramentas de IA
-generativa na implementação do código, nos testes e na redação da
-documentação. O autor é responsável pelo conteúdo, pelas escolhas de
-modelagem e pelos resultados apresentados.
