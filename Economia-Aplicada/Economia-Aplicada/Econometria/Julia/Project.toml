@@ -1,0 +1,4 @@
+name = "Econometria"
+
+[compat]
+julia = "1.10"
