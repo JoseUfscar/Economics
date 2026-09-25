@@ -6,7 +6,7 @@ explicação do que está sendo estimado, para que dê para acompanhar o racioc�
 do começo ao fim.
 
 A maior parte do material está em
-[`Economia-Aplicada/`](Economia-Aplicada/Economia-Aplicada/README.md) e se
+[`Economia-Aplicada/`](Economia-Aplicada/README.md) e se
 divide em duas frentes:
 
 - **Econometria aplicada** — as mesmas técnicas implementadas em R, Python,
@@ -40,7 +40,7 @@ Gauss-Jordan), e o Python usa numpy, pandas, scipy, statsmodels e matplotlib.
 ### Tributação do capital no Brasil
 
 O projeto em
-[`equilibrio_geral/`](Economia-Aplicada/Economia-Aplicada/Econometria/Python/macroeconomia/equilibrio_geral/README.md)
+[`equilibrio_geral/`](Economia-Aplicada/Econometria/Python/macroeconomia/equilibrio_geral/README.md)
 mede os efeitos de um aumento da tributação da renda do capital do tamanho
 previsto na Lei 15.270/2025, com parâmetros calibrados a partir da PWT 11.0,
 do Ipea e do IBGE.
@@ -55,17 +55,17 @@ do Ipea e do IBGE.
    distribuição muda bastante: dependendo de como a receita é devolvida, a
    metade mais pobre sai ganhando ou perdendo.
 
-![Transição após o aumento da tributação do capital](Economia-Aplicada/Economia-Aplicada/Econometria/Python/macroeconomia/equilibrio_geral/figuras/lei_15270.png)
+![Transição após o aumento da tributação do capital](Economia-Aplicada/Econometria/Python/macroeconomia/equilibrio_geral/figuras/lei_15270.png)
 
 A derivação completa, os algoritmos e a discussão dos resultados estão na
-[nota técnica](Economia-Aplicada/Economia-Aplicada/Econometria/Python/macroeconomia/equilibrio_geral/nota_tecnica.pdf).
+[nota técnica](Economia-Aplicada/Econometria/Python/macroeconomia/equilibrio_geral/nota_tecnica.pdf).
 A versão em Julia resolve o mesmo modelo por outro algoritmo (*reverse
 shooting*) e chega aos mesmos números até a 6ª casa decimal.
 
 ## Estrutura
 
 ```
-Economia-Aplicada/Economia-Aplicada/
+Economia-Aplicada/
 └── Econometria/
     ├── R/          # base R, sem pacotes externos
     ├── Python/     # inclui os modelos de equilíbrio geral
@@ -85,7 +85,7 @@ ser executados a partir da pasta `Econometria/`:
 
 ```bash
 git clone https://github.com/JoseUfscar/Economics.git
-cd Economics/Economia-Aplicada/Economia-Aplicada/Econometria
+cd Economics/Economia-Aplicada/Econometria
 ```
 
 **Python**
@@ -118,7 +118,7 @@ make -C C
 
 Os comandos dos modelos de equilíbrio geral (calibração, experimentos,
 estimação e testes) estão no
-[README do projeto](Economia-Aplicada/Economia-Aplicada/Econometria/Python/macroeconomia/equilibrio_geral/README.md).
+[README do projeto](Economia-Aplicada/Econometria/Python/macroeconomia/equilibrio_geral/README.md).
 Cada pasta de linguagem também tem seu próprio README, com mais detalhes.
 
 ## Dados
@@ -126,12 +126,12 @@ Cada pasta de linguagem também tem seu próprio README, com mais detalhes.
 - **Sintéticos** — `macro_series.csv`, `painel.csv`, `financas.csv` e
   `did.csv`, gerados por `dados/gerar_dados.py`. O processo gerador de cada
   um está descrito em
-  [`dados/README.md`](Economia-Aplicada/Economia-Aplicada/Econometria/dados/README.md).
+  [`dados/README.md`](Economia-Aplicada/Econometria/dados/README.md).
 - **Brasil** — séries da Penn World Table 11.0, do Ipea (estoque de capital) e
   do IBGE (Contas Nacionais e PNAD Contínua). Os CSVs ficam versionados para
   que tudo rode sem internet, e os scripts de download estão junto. Fontes,
   unidades e códigos de cada série em
-  [`dados/brasil/README.md`](Economia-Aplicada/Economia-Aplicada/Econometria/dados/brasil/README.md).
+  [`dados/brasil/README.md`](Economia-Aplicada/Econometria/dados/brasil/README.md).
 
 ## Adicionando um modelo
 
