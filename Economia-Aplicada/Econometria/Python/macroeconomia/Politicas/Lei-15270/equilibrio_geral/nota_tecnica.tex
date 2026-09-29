@@ -26,8 +26,8 @@ em tempo contínuo: agente representativo e famílias heterogêneas}
 
 \begin{abstract}
 Esta nota resolve o modelo de Ramsey--Cass--Koopmans em tempo contínuo com
-governo --- imposto sobre a renda do capital, imposto sobre o consumo, gasto
-público e transferências --- e o calibra para o Brasil com dados da Penn World
+governo (imposto sobre a renda do capital, imposto sobre o consumo, gasto
+público e transferências) e o calibra para o Brasil com dados da Penn World
 Table 11.0, do Ipea e do IBGE. A transição é calculada para mudanças de
 política inesperadas, anunciadas e temporárias, empilhando os regimes num único
 problema de contorno. O exercício principal mede o efeito de um aumento da
@@ -41,9 +41,9 @@ transições observadas em dados anuais, embora o estado estacionário identifiq
 apenas uma combinação das duas. A segunda parte refaz o exercício com famílias
 heterogêneas (modelo de Aiyagari em tempo contínuo, resolvido pelas equações de
 Hamilton--Jacobi--Bellman e Kolmogorov), com risco de desemprego e desigualdade
-de renda calibrados com a PNAD Contínua. O efeito agregado quase não muda, mas
-a distribuição muda muito: se a receita volta igualmente a todos, 62\% das
-famílias ganham; se financia a isenção do imposto de renda da faixa
+de renda calibrados com a PNAD Contínua. O efeito agregado quase não muda, e o
+resultado distributivo depende de como a receita volta: se volta igualmente a
+todos, 62\% das famílias ganham; se financia a isenção do imposto de renda da faixa
 intermediária, como na lei, essa faixa ganha 0,49\% do consumo, e tanto a
 metade mais pobre, já isenta, quanto os 10\% mais ricos perdem.
 \end{abstract}
@@ -67,9 +67,17 @@ acumulação de capital e, com ela, a produtividade do trabalho e os salários.
 A pergunta desta nota é quantitativa: \emph{qual o tamanho desses efeitos
 para a economia brasileira, no longo prazo e na transição, e quanto da receita
 estática sobrevive quando a base tributária se ajusta?} O instrumento é o
-modelo neoclássico de crescimento com família representativa, em tempo contínuo,
-que tem a vantagem de tratar de forma limpa a diferença entre choques
-inesperados e anunciados.
+modelo neoclássico de crescimento com família representativa (Ramsey, 1928;
+Cass, 1965; Koopmans, 1965), em tempo contínuo, na forma dos livros-texto
+(Barro e Sala-i-Martin, 2004; Acemoglu, 2009; Romer, 2019). O tempo contínuo
+facilita tratar a diferença entre choques inesperados e anunciados.
+
+A pergunta normativa, qual deveria ser a alíquota, fica de fora. Com agente
+representativo e horizonte infinito, Chamley (1986) e Judd (1985) mostram que
+a alíquota ótima sobre o capital tende a zero no longo prazo; Straub e
+Werning (2020) mostram que o resultado depende de hipóteses fortes e pode
+não valer. Aqui a alíquota nova é dada pela lei, e o que se mede é o custo
+dela e quem o paga.
 
 O modelo com agente representativo não vê a redistribuição entre famílias,
 que é o objetivo declarado da lei; nele a isenção para rendas baixas é
@@ -190,7 +198,7 @@ De $\dot c=0$ e $\dot k=0$,
 \end{equation}
 Três propriedades orientam os experimentos: (i) o retorno líquido de longo
 prazo $r^*$ não depende da política; (ii) $k^*$ não depende de $\hat g$ nem de
-$\tau_c$ --- o gasto só desloca consumo --- e (iii) $k^*$ cai com $\tau_k$.
+$\tau_c$, porque o gasto só desloca consumo; e (iii) $k^*$ cai com $\tau_k$.
 Diferenciando~\eqref{eq:ee}, com $R^*=\alpha (k^*)^{\alpha-1}$,
 \begin{equation}
  \frac{\dd\ln k^*}{\dd\tau_k}
@@ -280,8 +288,8 @@ diferenças finitas, a insensibilidade ao horizonte $T$, a continuidade de $c$
 na vigência, o salto~\eqref{eq:salto}, a identidade $Y=C+I+G$ e a acumulação
 anual de capital, e que o orçamento das famílias reproduz a restrição de
 recursos. A versão em Julia (\nolinkurl{Julia/macroeconomia/equilibrio_geral})
-usa outro algoritmo --- \emph{reverse shooting}, integrando o sistema para trás
-a partir da direção estável com Runge--Kutta de 4ª ordem (Judd, 1998) --- e
+usa outro algoritmo, o \emph{reverse shooting}, que integra o sistema para trás
+a partir da direção estável com Runge--Kutta de 4ª ordem (Judd, 1998), e
 concorda com o Python até a sexta casa decimal.
 
 \section{Calibração para o Brasil}
@@ -289,7 +297,7 @@ concorda com o Python até a sexta casa decimal.
 
 A Tabela~\ref{tab:calibracao} resume a calibração, feita com médias ou
 tendências de 2000 a 2023. A participação do capital vem da parcela do trabalho
-na PWT 11.0, que ajusta a renda dos autônomos. O estoque de capital e a
+na PWT 11.0 (Feenstra, Inklaar e Timmer, 2015), que ajusta a renda dos autônomos como propõe Gollin (2002). O estoque de capital e a
 depreciação vêm do Ipea, cuja série é compatível com as Contas Nacionais; a
 PWT produz uma relação capital-produto bem maior, por diferenças de cobertura
 e de preços dos ativos. $n$ é a tendência de crescimento dos ocupados e $g$ a
@@ -303,17 +311,19 @@ $\tau_k^{\text{bruto}}=18\%$. Como o modelo tributa a renda líquida de
 depreciação, convertemos mantendo a receita,
 $\tau_k(R-\delta)=\tau_k^{\text{bruto}}R$, com $R=\alpha Y/K$:
 \begin{equation}
- \tau_k=\tau_k^{\text{bruto}}\,\frac{R}{R-\delta}=0{,}18\times\frac{0{,}199}{0{,}199-0{,}060}=0{,}259.
+ \tau_k=\tau_k^{\text{bruto}}\,\frac{R}{R-\delta}=0{,}18\times\frac{0{,}1986}{0{,}1986-0{,}0605}=0{,}259.
 \end{equation}
 
 \paragraph{Taxa de desconto.} Com $\theta=2$, valor usual na literatura, $\rho$ é
 escolhido para que o estado estacionário reproduza $K/Y$: pela equação de
 Euler, $\rho=(1-\tau_k)(\alpha Y/K-\delta)-\theta g=0{,}089$. O retorno líquido
-de longo prazo é $r^*=\rho+\theta g=10{,}2\%$ ao ano --- alto, como costuma
-ser o retorno do capital no Brasil. Ele é o retorno do capital físico após
+de longo prazo é $r^*=\rho+\theta g=10{,}2\%$ ao ano, alto, como costuma
+ser o retorno do capital no Brasil. É o retorno do capital físico após
 impostos, e não uma taxa de juros de título: a Selic embute risco,
 intermediação e política monetária, ausentes do modelo. O gasto público
-$\hat g$ reproduz $G/Y$.
+$\hat g$ reproduz $G/Y$. O imposto sobre o consumo começa em zero: com
+alíquota constante ele não afeta nenhuma escolha e só importa no experimento
+em que muda.
 
 \begin{table}[ht]
 \centering
@@ -360,15 +370,33 @@ $C/Y$ (não usado) & 0,623 & 0,609\\
 \section{Resultados}
 
 \subsection{O aumento da tributação do capital}
+\label{sec:lei}
 Para traduzir a lei num choque do modelo, supomos que os R\$ 34,12 bilhões
 estimados para 2026 incidem sobre a renda do capital líquida de depreciação,
 $(\alpha-\delta K/Y)\,\text{PIB}$, com o PIB nominal de 2025: o resultado é
-$\Delta\tau_k\approx0{,}85$ ponto percentual. É uma ordem de grandeza ---
-parte do imposto mínimo incide sobre outras rendas, e a lei aprovada difere do
-projeto original ---, por isso a Tabela~\ref{tab:sensibilidade} mostra
-também choques maiores. Consideramos duas versões: a lei anunciada em 15 de
-março de 2025, data da Exposição de Motivos, com vigência em 1º de janeiro de
-2026 (0,8 ano depois), e uma surpresa em 1º de janeiro de 2026.
+$\Delta\tau_k\approx0{,}85$ ponto percentual. É uma ordem de grandeza: parte
+do imposto mínimo incide sobre outras rendas, e a lei aprovada difere do
+projeto original. Por isso a Tabela~\ref{tab:sensibilidade} mostra também
+choques maiores. Consideramos duas versões: a lei anunciada em 15 de março de
+2025, data da Exposição de Motivos, com vigência em 1º de janeiro de 2026 (0,8
+ano depois), e uma surpresa em 1º de janeiro de 2026. O projeto chegou ao
+Congresso três dias depois da Exposição de Motivos, em 18 de março; a
+diferença não muda nenhum resultado.
+
+Dois motivos sugerem ler os números desta seção como um limite superior do
+efeito sobre o capital. Primeiro, R\$ 8,90 bilhões (26\% do total) vêm do
+imposto sobre dividendos remetidos a não residentes. Numa economia aberta,
+esse imposto recai sobre o capital estrangeiro, e não sobre a poupança das
+famílias do modelo. Segundo, boa parte da receita nova vem da tributação de
+dividendos. Se o investimento das empresas é financiado na margem com lucros
+retidos, um imposto sobre a distribuição quase não altera o custo do capital
+(a chamada visão nova, de Auerbach, 1979, e Bradford, 1981); Yagan (2015) não
+encontra efeito do corte do imposto sobre dividendos de 2003 no investimento
+das empresas americanas. Um terceiro motivo vai na direção contrária. A lei
+não muda a tributação do capital de quem fica abaixo de R\$ 600 mil de renda
+por ano, e o modelo espalha o aumento por todo o capital. Para as famílias do
+topo, que respondem pela maior parte da poupança, a alíquota marginal sobe
+bem mais que 0,85 ponto.
 
 \begin{figure}[ht]
 \centering
@@ -386,16 +414,19 @@ a cair antes da vigência; o retorno líquido \emph{sobe} levemente nesse
 intervalo, porque o capital fica mais escasso enquanto a alíquota antiga ainda
 vale, e cai de uma vez na vigência. No longo prazo (Tabela~\ref{tab:sensibilidade},
 linha ``base''), o capital cai 1,46\% e o PIB e os salários, 0,66\%. A
-fórmula~\eqref{eq:elasticidade} dá o mesmo número à mão:
-$-\frac{1}{0{,}549}\times\frac{0{,}138}{0{,}199}\times\frac{0{,}0085}{0{,}741}=-1{,}46\%$.
+fórmula~\eqref{eq:elasticidade}, aplicada à variação do logaritmo, dá o mesmo
+número à mão:
+$-\frac{1}{0{,}549}\times\frac{0{,}138}{0{,}199}\times\frac{0{,}00854}{0{,}741}=-1{,}46\%$.
 
 \paragraph{Receita estática e dinâmica.} Com o capital fixo, o aumento de
-alíquota arrecadaria 0,268\% do PIB --- por construção, a estimativa oficial.
+alíquota arrecadaria 0,268\% do PIB, que é, por construção, a estimativa oficial.
 Depois que a base encolhe, a receita adicional de longo prazo é 0,242\% do PIB
 inicial: 90\% da estimativa estática. A Figura~\ref{fig:laffer} mostra a curva
 de Laffer de longo prazo do imposto sobre o capital: a receita máxima ocorre
 em $\tau_k=66\%$, bem acima da alíquota atual, de modo que o Brasil está no
-lado crescente da curva.
+lado crescente da curva. É uma curva de estado estacionário. Para a política
+fiscal, importa também o valor presente da receita durante a transição, que
+fica mais perto da receita estática, porque o capital demora a cair.
 
 \paragraph{Bem-estar.} Com a receita devolvida como transferência, o aumento
 de $\tau_k$ é pura distorção para a família representativa, e o custo é de
@@ -462,11 +493,11 @@ A Figura~\ref{fig:outros} mostra dois experimentos que ilustram o papel das
 expectativas. Um aumento de surpresa do gasto público de 2\% do PIB por cinco
 anos, financiado por impostos lump-sum, derruba o consumo em cerca de 1,9\% de
 imediato; como o choque é temporário, a família suaviza e absorve parte dele
-reduzindo o investimento, e o capital cai 2,5\% até o fim do programa, com o
+reduzindo o investimento, e o capital cai 2,6\% até o fim do programa, com o
 retorno subindo 0,2 p.p. Já um aumento de 5 p.p. no imposto sobre o consumo,
 anunciado com dois anos de antecedência, antecipa consumo: o consumo sobe 1,7\%
 no anúncio, cai na vigência exatamente pelo fator $(1{,}05)^{-1/2}$
-de~\eqref{eq:salto} e volta ao nível inicial, pois $\tau_c$ constante é neutro no
+de~\eqref{eq:salto} (a alíquota inicial é zero) e volta ao nível inicial, pois $\tau_c$ constante é neutro no
 longo prazo. A antecipação do consumo custa capital, que cai cerca de 1\% até a
 vigência.
 
@@ -544,16 +575,17 @@ $\theta$ & 2,000 & 1,995 & $-0{,}005$ & 0,027 & 0,027 & 0,026 & 0,96\\
 O modelo representativo diz quanto a economia perde, mas não quem perde. Esta
 seção substitui a família representativa por um contínuo de dinastias que
 diferem em riqueza e renda e enfrentam risco de desemprego que não conseguem
-segurar: o modelo de Aiyagari (1994), em tempo contínuo, como em Achdou et al.
-(2022). Tecnologia, crescimento, gasto público e a alíquota $\tau_k$ são os da
+segurar: o modelo de Aiyagari (1994), parente do de Huggett (1993), em tempo
+contínuo, como em Achdou et al. (2022). Tecnologia, crescimento, gasto público e a alíquota $\tau_k$ são os da
 Seção~\ref{sec:calibracao}.
 
 \subsection{Modelo}
 Cada dinastia tem riqueza por membro $a\ge0$, em unidades de eficiência, e
 produtividade $z$, que segue uma cadeia de Markov em tempo contínuo com
-intensidades $q_{zz'}$. Com $\tilde r=(1-\tau_k)r$ e $r=\alpha K^{\alpha-1}-\delta$,
+intensidades $q_{zz'}$. Com a notação da parte representativa,
+$R=\alpha k^{\alpha-1}$, $r=(1-\tau_k)(R-\delta)$ e $w=(1-\alpha)k^\alpha$,
 \begin{equation}
- \dot a=(\tilde r-n-g)\,a+(1-\tau_w)\,w\,z+T_z-c,
+ \dot a=(r-n-g)\,a+(1-\tau_w)\,w\,z+T_z-c,
  \label{eq:orcamento_ha}
 \end{equation}
 em que $\tau_w$ tributa a renda do trabalho e $T_z$ é uma transferência. A
@@ -564,18 +596,25 @@ função valor resolve a equação de Hamilton--Jacobi--Bellman
  \label{eq:hjb}
 \end{equation}
 com $u'(c)=V_z'(a)$ e a restrição de estado $V_z'(0)\ge u'\bigl((1-\tau_w)wz+T_z\bigr)$,
-que impede a riqueza de ficar negativa. A densidade estacionária $g_z(a)$
+que impede a riqueza de ficar negativa. A densidade estacionária $\phi_z(a)$
 resolve a equação de Kolmogorov
 \begin{equation}
- 0=-\frac{\partial}{\partial a}\bigl[s_z(a)\,g_z(a)\bigr]+\sum_{z'}q_{z'z}\,g_{z'}(a)-\sum_{z'}q_{zz'}\,g_z(a),
+ 0=-\frac{\partial}{\partial a}\bigl[s_z(a)\,\phi_z(a)\bigr]+\sum_{z'}q_{z'z}\,\phi_{z'}(a)-\sum_{z'}q_{zz'}\,\phi_z(a),
  \label{eq:kfe}
 \end{equation}
 com $s_z(a)$ a poupança de~\eqref{eq:orcamento_ha}. O equilíbrio exige
-$K=\sum_z\int a\,g_z(a)\dd a$, trabalho efetivo $E[z]=1$ e o orçamento do
-governo $G+\bar T=\tau_k rK+\tau_w w$, com $\bar T$ a transferência média. O
-seguro incompleto gera poupança precaucional, e por isso $\tilde r<\rho+\theta g$:
-para sustentar o mesmo $K/Y$, as famílias precisam ser mais impacientes que no
-modelo representativo. Sem risco, a regra de consumo é a do modelo representativo
+$k=\sum_z\int a\,\phi_z(a)\dd a$, trabalho efetivo $E[z]=1$ e o orçamento do
+governo $\hat g+\bar T=\tau_k(R-\delta)k+\tau_w w$, com $\bar T$ a transferência
+média. O seguro incompleto gera poupança precaucional, e por isso
+$r<\rho+\theta g$: para sustentar o mesmo $K/Y$, as famílias precisam ser mais
+impacientes que no modelo representativo.
+
+O trabalho efetivo $E[z]=1$ inclui os desempregados, com a produtividade do
+seu estado. A renda do desemprego é tratada, portanto, como produção
+(trabalho informal ou produção doméstica), e não como um benefício pago pelo
+governo. O modelo baseado em agentes sem leiloeiro, na pasta de previsão,
+faz o contrário: lá o desempregado não produz e recebe do governo. Com essa
+mudança, o capital de equilíbrio cai 4\%, e os juros e o salário não mudam. Sem risco, a regra de consumo é a do modelo representativo
 (isso é um dos testes do código).
 
 \subsection{Método numérico}
@@ -611,20 +650,25 @@ parâmetros reproduzem exatamente as quatro faixas: 42\% dos desempregados são 
 curta duração, com saída de 4,10 por ano (2,9 meses em média), e os demais saem
 a 0,49 por ano (2 anos em média). A taxa de separação, 0,216 por ano, reproduz a
 desocupação média; o episódio médio de desemprego dura 6 meses. Durante o
-desemprego, a família recebe 40\% da sua renda do trabalho.
+desemprego, a família recebe 40\% da sua renda do trabalho. Esse número é uma
+escolha de calibração, e não uma estimativa: resume o seguro-desemprego, que
+só cobre os trabalhadores formais e por no máximo cinco meses, a ajuda de
+outros membros da família e o trabalho informal.
 
 \paragraph{Desigualdade de renda.} Há três tipos permanentes, definidos pela
 massa de rendimento do trabalho da PNAD (tabela 7543, média de 2012 a 2025): os
-50\% com menor renda recebem 19,2\% da massa; os 40\% seguintes, 40,0\%; os
-10\% com maior renda, 40,8\%. A produtividade relativa dos tipos é, portanto,
-0,38, 1,00 e 4,10. O risco de desemprego é o mesmo para todos, o que é uma
+50\% com menor renda recebem 19,0\% da massa; os 40\% seguintes, 40,0\%; os
+10\% com maior renda, 40,9\%. As parcelas da tabela somam 99,9\%;
+normalizadas para somar 100\%, dão produtividades relativas de 0,38, 1,00 e
+4,10. O risco de desemprego é o mesmo para todos, o que é uma
 simplificação.
 
 \paragraph{Resultado.} Para reproduzir $K/Y=2{,}27$, a taxa de desconto é
 $\rho=0{,}0903$, acima dos 0,0889 do modelo representativo, e $\tau_w=0{,}202$
-financia o gasto que $\tau_k$ não cobre. O Gini da renda no modelo é 0,48,
-perto do Gini do rendimento domiciliar per capita do IBGE (0,53 na média de
-2012 a 2025). A riqueza, porém, é bem menos concentrada que nos dados: os 10\%
+financia o gasto que $\tau_k$ não cobre. O Gini da renda no modelo é 0,48, e o
+do rendimento domiciliar per capita do IBGE, 0,53 na média de 2012 a 2025. Os
+conceitos não são iguais: no modelo, é a renda total de cada dinastia, do
+trabalho, do capital e das transferências. A riqueza, porém, é bem menos concentrada que nos dados: os 10\%
 mais ricos têm 44\% da riqueza no modelo e cerca de 80\% no Brasil (World
 Inequality Database, 2021), uma limitação conhecida desse tipo de modelo
 (Castañeda, Díaz-Giménez e Ríos-Rull, 2003) ilustrada na Figura~\ref{fig:lorenz}.
@@ -638,14 +682,16 @@ ocupados (PNAD) e riqueza das famílias (WID).}
 \end{figure}
 
 \subsection{Quem ganha e quem perde}
-O experimento é o da Seção~\ref{sec:calibracao}: $\tau_k$ aumenta 0,85 ponto
+O experimento é o da Seção~\ref{sec:lei}: $\tau_k$ aumenta 0,85 ponto
 percentual de surpresa em $t=0$. A receita nova volta às famílias de duas
 formas. Na devolução \emph{uniforme}, todas recebem a mesma transferência. Na
 devolução \emph{isenção}, ela vai só para os empregados do grupo intermediário,
-o que imita a isenção do imposto de renda da lei: pelos limites de percentil da
+o que imita a isenção do imposto de renda da lei. Pelos limites de percentil da
 PNAD de 2025, o antigo limite de isenção (cerca de R\$ 3 mil) fica perto do P70
-(R\$ 3.055), e o novo limite de R\$ 5 mil e a redução parcial até R\$ 7.350
-ficam entre o P80 (R\$ 4.470) e o P90 (R\$ 6.985), todos dentro desse grupo.
+(R\$ 3.055), e o novo limite de R\$ 5 mil, entre o P80 (R\$ 4.470) e o P90
+(R\$ 6.985). A redução parcial vai até R\$ 7.350, um pouco acima do P90, mas
+nessa ponta o desconto já é pequeno, porque diminui linearmente de R\$ 5 mil
+a R\$ 7.350. Quase todo o benefício fica, portanto, no grupo intermediário.
 
 O bem-estar de cada família $(a,z)$ é medido em $t=0$, incluindo toda a
 transição: $\lambda(a,z)=[V^{\text{novo}}_0(a,z)/V^{\text{antigo}}(a,z)]^{1/(1-\theta)}-1$
@@ -693,26 +739,27 @@ inicial.}
 \label{fig:bemestar}
 \end{figure}
 
-Três resultados se destacam. \textbf{Primeiro}, o agregado é quase o mesmo do
-modelo representativo: o capital de longo prazo cai 1,45\% ou 1,41\%, contra
-1,46\%, e a transição tem velocidade parecida (Figura~\ref{fig:transicao_ha}).
-Para medir o efeito sobre o PIB, o agente representativo é uma boa aproximação.
+No agregado, o modelo heterogêneo fica perto do representativo: o capital de
+longo prazo cai 1,45\% ou 1,41\%, contra 1,46\%, e a transição tem velocidade
+parecida (Figura~\ref{fig:transicao_ha}). Para medir o efeito sobre o PIB, o
+agente representativo é uma boa aproximação.
 
-\textbf{Segundo}, a distribuição muda tudo. Com devolução uniforme, a
-transferência vale muito mais, em proporção do consumo, para quem tem pouca
-renda e pouca riqueza do que a queda gradual dos salários e dos juros: toda a
-metade mais pobre ganha, e 62\% das famílias saem ganhando. O ganho cai com a
-riqueza --- de $+0{,}82\%$ no décimo mais pobre a $-0{,}36\%$ no mais rico ---
-porque os ricos pagam o imposto sobre o capital e vivem mais da renda do
-capital, cujo retorno líquido cai.
+Quem ganha e quem perde depende da forma de devolver a receita. Com a
+devolução uniforme, a transferência vale mais, em proporção do consumo, para
+quem tem pouca renda e pouca riqueza do que a queda gradual dos salários e
+dos juros. Toda a metade mais pobre ganha, e 62\% das famílias saem ganhando.
+O ganho cai com a riqueza, de $+0{,}82\%$ no décimo mais pobre a $-0{,}36\%$ no
+mais rico, porque os ricos pagam o imposto sobre o capital e vivem mais da
+renda do capital, cujo retorno líquido cai.
 
-\textbf{Terceiro}, com a devolução que imita a lei, os ganhadores são a faixa
-intermediária, que recebe a isenção, e a metade mais pobre \emph{perde}
-$0{,}42\%$: ela já era isenta e arca com a queda dos salários que a redução do
-capital provoca. É o mesmo mecanismo que Domeij e Heathcote (2004) destacam
-para a redução de impostos sobre o capital nos Estados Unidos, visto do outro
-lado: os efeitos de equilíbrio geral sobre os salários distribuem o custo de
-um imposto sobre o capital por toda a economia, inclusive por quem não o paga.
+Com a devolução que imita a lei, ganha o grupo intermediário, que recebe a
+isenção, e a metade mais pobre perde $0{,}42\%$: ela já era isenta e arca com a
+queda dos salários que a redução do capital provoca. Os efeitos de equilíbrio
+geral espalham o custo do imposto por quem não o paga. Domeij e Heathcote
+(2004) mostram, para os Estados Unidos, que a mudança no sentido inverso
+também tem efeitos distributivos grandes: eliminar o imposto sobre o capital,
+compensando com imposto sobre o trabalho, reduziria o bem-estar da maioria
+das famílias, mesmo com salários mais altos no longo prazo.
 
 \begin{figure}[ht]
 \centering
@@ -721,34 +768,47 @@ um imposto sobre o capital por toda a economia, inclusive por quem não o paga.
 \label{fig:transicao_ha}
 \end{figure}
 
-Esses números são condicionais às hipóteses do modelo: oferta de trabalho
+A lei arrecada mais do que custa a isenção (R\$ 34,12 bilhões contra R\$ 25,84
+bilhões em 2026, nas estimativas oficiais), e nas duas formas de devolução toda
+a receita nova volta às famílias. Numa terceira conta, o grupo intermediário
+recebe só a fração 25,84/34,12 da transferência e o resto se divide igualmente
+entre todos. Nesse caso, a metade mais pobre ainda perde, 0,18\% do consumo (contra 0,42\%
+quando toda a receita nova vai para o grupo intermediário), o grupo
+intermediário ganha 0,35\%, os 10\% com maior renda perdem 0,42\%, e o ganho
+médio fica em zero.
+
+Esses números dependem das hipóteses do modelo: oferta de trabalho
 inelástica, economia fechada, risco de desemprego igual para todos e riqueza
-menos concentrada que nos dados. Com a concentração real, a perda dos mais ricos
-e a receita seriam maiores. Além disso, a lei arrecada mais do que custa a
-isenção (R\$ 34,12 bilhões contra R\$ 25,84 bilhões em 2026, nas estimativas
-oficiais), e aqui toda a receita nova é devolvida.
+menos concentrada que nos dados. Com a concentração real, a perda dos mais
+ricos seria maior.
 
 \section{Limitações e extensões}
 \label{sec:limites}
 
-\begin{itemize}
- \item \textbf{Concentração da riqueza.} O modelo heterogêneo põe 44\% da
- riqueza nos 10\% mais ricos, contra cerca de 80\% nos dados. Retornos
- heterogêneos ou um estado de renda muito alta e raro (Castañeda et al., 2003)
- aproximariam o modelo dos dados.
- \item \textbf{Mercado de trabalho.} O risco de desemprego é o mesmo para todos
- os tipos e a informalidade não aparece; ambos pesam mais na base da
- distribuição.
- \item \textbf{Economia aberta.} Com mobilidade de capital, o retorno é
- ancorado no exterior e o imposto recai mais sobre o trabalho; a economia fechada
- é um caso extremo.
- \item \textbf{Oferta de trabalho.} Com trabalho elástico, a isenção para rendas
- baixas deixaria de ser neutra.
- \item \textbf{Incerteza.} O anúncio é tratado como crível; a tramitação do
- projeto foi incerta até a aprovação.
- \item \textbf{Medida da alíquota.} $\tau_k$ é uma alíquota média; decisões de
- investimento dependem da alíquota marginal efetiva, que pode ser diferente.
-\end{itemize}
+A tradução da lei num aumento uniforme de $\tau_k$ é a hipótese mais forte da
+nota. A Seção~\ref{sec:lei} explica por que ela tende a exagerar a queda do
+capital: parte da receita vem de não residentes, e um imposto sobre dividendos
+pode afetar pouco o investimento financiado com lucros retidos. Um modelo com
+economia aberta, em que o retorno é ancorado no exterior e o imposto recai
+mais sobre o trabalho, e com uma firma que decide quanto distribuir, trataria
+os dois pontos. Pela mesma razão, $\tau_k$ é uma alíquota média, e as
+decisões de investimento dependem da alíquota marginal efetiva, que pode ser
+diferente, sobretudo no topo da distribuição.
+
+O modelo heterogêneo põe 44\% da riqueza nos 10\% mais ricos, contra cerca de
+80\% nos dados. Retornos heterogêneos ou um estado de renda muito alta e raro
+(Castañeda et al., 2003) aproximariam o modelo dos dados. No mercado de
+trabalho, o risco de desemprego é o mesmo para todos os tipos, a
+informalidade não aparece, e o desempregado continua produzindo 40\% do que
+produziria empregado; os três pontos pesam mais na base da distribuição. Com
+oferta de trabalho elástica e um imposto de renda progressivo, a isenção
+deixaria de ser uma transferência e passaria a mudar as escolhas de quem a
+recebe.
+
+Por fim, o anúncio é tratado como crível, embora a tramitação do projeto
+tenha sido incerta até a aprovação, e a curva de Laffer da
+Figura~\ref{fig:laffer} compara estados estacionários, sem o valor presente da
+receita durante a transição.
 
 \section*{Reprodução}
 Todos os números e figuras desta nota saem dos programas da pasta
@@ -758,28 +818,34 @@ Todos os números e figuras desta nota saem dos programas da pasta
  \item parte representativa: \texttt{calibracao.py}, \texttt{experimentos.py} e
  \texttt{estimacao.py -{}-replicas 100};
  \item famílias heterogêneas: \texttt{calibracao\_renda.py} e
- \texttt{experimentos\_ha.py}.
+ \texttt{experimentos\_ha.py}, que grava o resumo do bem-estar em
+ \nolinkurl{resultados/ha_bem_estar.csv}.
 \end{itemize}
 
 \begin{thebibliography}{99}
 \small
+\bibitem{acemoglu} Acemoglu, D. (2009). \emph{Introduction to Modern Economic
+Growth}. Princeton University Press.
 \bibitem{achdou} Achdou, Y., Han, J., Lasry, J.-M., Lions, P.-L. e Moll, B. (2022).
 Income and Wealth Distribution in Macroeconomics: A Continuous-Time Approach.
 \emph{Review of Economic Studies}, 89(1), 45--86.
 \bibitem{aiyagari} Aiyagari, S. R. (1994). Uninsured Idiosyncratic Risk and
 Aggregate Saving. \emph{Quarterly Journal of Economics}, 109(3), 659--684.
-\bibitem{acemoglu} Acemoglu, D. (2009). \emph{Introduction to Modern Economic
-Growth}. Princeton University Press.
+\bibitem{auerbach} Auerbach, A. J. (1979). Wealth Maximization and the Cost of
+Capital. \emph{Quarterly Journal of Economics}, 93(3), 433--446.
 \bibitem{barro} Barro, R. J. e Sala-i-Martin, X. (2004). \emph{Economic Growth}.
 2ª ed. MIT Press.
+\bibitem{bradford} Bradford, D. F. (1981). The Incidence and Allocation Effects
+of a Tax on Corporate Distributions. \emph{Journal of Public Economics}, 15(1),
+1--22.
 \bibitem{lei} Brasil (2025). Lei nº 15.270, de 26 de novembro de 2025.
 \bibitem{em} Brasil, Ministério da Fazenda (2025). Exposição de Motivos
 nº 00019/2025 MF, de 15 de março de 2025 (PL nº 1.087/2025).
+\bibitem{cass} Cass, D. (1965). Optimum Growth in an Aggregative Model of Capital
+Accumulation. \emph{Review of Economic Studies}, 32(3), 233--240.
 \bibitem{castaneda} Castañeda, A., Díaz-Giménez, J. e Ríos-Rull, J.-V. (2003).
 Accounting for the U.S. Earnings and Wealth Inequality. \emph{Journal of
 Political Economy}, 111(4), 818--857.
-\bibitem{cass} Cass, D. (1965). Optimum Growth in an Aggregative Model of Capital
-Accumulation. \emph{Review of Economic Studies}, 32(3), 233--240.
 \bibitem{chamley} Chamley, C. (1986). Optimal Taxation of Capital Income in
 General Equilibrium with Infinite Lives. \emph{Econometrica}, 54(3), 607--622.
 \bibitem{domeij} Domeij, D. e Heathcote, J. (2004). On the Distributional
@@ -815,8 +881,14 @@ Finanças Públicas}, 25(3).
 \emph{Economic Journal}, 38(152), 543--559.
 \bibitem{romer} Romer, D. (2019). \emph{Advanced Macroeconomics}. 5ª ed.
 McGraw-Hill.
+\bibitem{straub} Straub, L. e Werning, I. (2020). Positive Long-Run Capital
+Taxation: Chamley-Judd Revisited. \emph{American Economic Review}, 110(1),
+86--119.
 \bibitem{wid} World Inequality Database (2025). Brasil: distribuição da
 riqueza líquida pessoal. Disponível em wid.world.
+\bibitem{yagan} Yagan, D. (2015). Capital Tax Reform and the Real Economy: The
+Effects of the 2003 Dividend Tax Cut. \emph{American Economic Review}, 105(12),
+3531--3563.
 \end{thebibliography}
 
 \end{document}
