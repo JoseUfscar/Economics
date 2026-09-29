@@ -16,7 +16,7 @@ O modelo representativo (modelo.py) serve de comparação: nele todos perdem.
 
 Rode a partir da pasta Econometria/ (cerca de 3 minutos):
 
-    python Python/macroeconomia/equilibrio_geral/experimentos_ha.py
+    python Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/experimentos_ha.py
 """
 from dataclasses import dataclass, replace
 from pathlib import Path

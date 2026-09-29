@@ -1,0 +1,9 @@
+devolucao,grupo,ganho médio (%),capital_longo_prazo,desemprego_longo_prazo,capital_equilibrio,erro-padrão do ganho,erro-padrão do capital,erro-padrão do desemprego
+uniforme,50% com menor renda,0.623956,-2.17054,-0.00141536,-1.44783,0.306977,0.567838,0.0152534
+uniforme,40% seguintes,-0.0289133,-2.17054,-0.00141536,-1.44783,0.13559,0.567838,0.0152534
+uniforme,10% com maior renda,-0.275118,-2.17054,-0.00141536,-1.44783,0.0897789,0.567838,0.0152534
+uniforme,todos,0.272901,-2.17054,-0.00141536,-1.44783,0.215257,0.567838,0.0152534
+isenção,50% com menor renda,-1.24553,-1.43975,0.00452344,-1.412,0.331124,0.554965,0.0161112
+isenção,40% seguintes,0.779414,-1.43975,0.00452344,-1.412,0.141695,0.554965,0.0161112
+isenção,10% com maior renda,-0.377331,-1.43975,0.00452344,-1.412,0.0891165,0.554965,0.0161112
+isenção,todos,-0.348734,-1.43975,0.00452344,-1.412,0.22997,0.554965,0.0161112

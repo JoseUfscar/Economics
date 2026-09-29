@@ -19,7 +19,7 @@ julia Julia/macroeconomia/equilibrio_geral/ramsey.jl
 
 ### Modelo de equilíbrio geral (`macroeconomia/equilibrio_geral/`)
 
-Versão em Julia do [modelo de Ramsey com governo](../Python/macroeconomia/equilibrio_geral/README.md).
+Versão em Julia do [modelo de Ramsey com governo](../Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/README.md).
 Refaz a calibração para o Brasil a partir de `dados/brasil/brasil_anual.csv` e
 resolve a transição por *reverse shooting* (Runge-Kutta de 4ª ordem para trás
 no tempo, a partir da direção estável). O Python usa outro algoritmo (problema

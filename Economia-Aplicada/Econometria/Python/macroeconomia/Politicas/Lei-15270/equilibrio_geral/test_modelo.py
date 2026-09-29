@@ -1,7 +1,7 @@
 """
 Testes econômicos e numéricos do modelo. Rode a partir da pasta Econometria/:
 
-    python -m unittest discover -s Python/macroeconomia/equilibrio_geral -v
+    python -m unittest discover -s Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral -v
 """
 import unittest
 

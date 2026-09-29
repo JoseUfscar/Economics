@@ -121,15 +121,15 @@ salários que a redução do capital provoca, sem receber a isenção.
 Da pasta `Econometria/`, com as dependências de `Python/requirements.txt`:
 
 ```bash
-python Python/macroeconomia/equilibrio_geral/calibracao.py          # calibração
-python Python/macroeconomia/equilibrio_geral/experimentos.py        # parte 1: experimentos e figuras
-python Python/macroeconomia/equilibrio_geral/estimacao.py --replicas 100
-python Python/macroeconomia/equilibrio_geral/calibracao_renda.py    # processo de renda (PNAD)
-python Python/macroeconomia/equilibrio_geral/experimentos_ha.py     # parte 2 (cerca de 3 minutos)
-python -m unittest discover -s Python/macroeconomia/equilibrio_geral -v
+python Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/calibracao.py          # calibração
+python Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/experimentos.py        # parte 1: experimentos e figuras
+python Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/estimacao.py --replicas 100
+python Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/calibracao_renda.py    # processo de renda (PNAD)
+python Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/experimentos_ha.py     # parte 2 (cerca de 3 minutos)
+python -m unittest discover -s Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral -v
 ```
 
-Os dados ficam em [`dados/brasil/`](../../../dados/brasil/README.md), com os
+Os dados ficam em [`dados/brasil/`](../../../../../dados/brasil/README.md), com os
 scripts que os baixam. A nota compila com `latexmk -pdf nota_tecnica.tex`
 nesta pasta.
 
@@ -147,6 +147,6 @@ nesta pasta.
 | `test_*.py` | 53 testes: equações, soluções exatas, identidades contábeis, calibrações, experimentos e estimação |
 | `nota_tecnica.tex`, `.pdf` | derivação, métodos, resultados e referências |
 
-A [versão em Julia](../../../Julia/macroeconomia/equilibrio_geral/ramsey.jl)
+A [versão em Julia](../../../../../Julia/macroeconomia/equilibrio_geral/ramsey.jl)
 refaz a calibração e resolve a parte 1 por *reverse shooting*, um algoritmo
 diferente; os resultados coincidem com os do Python até a 6ª casa decimal.

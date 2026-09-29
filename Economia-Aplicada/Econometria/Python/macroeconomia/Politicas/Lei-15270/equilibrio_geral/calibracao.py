@@ -15,7 +15,7 @@ Alvos, como médias ou tendências no período escolhido (padrão 2000-2023):
 
 Rode a partir da pasta Econometria/:
 
-    python Python/macroeconomia/equilibrio_geral/calibracao.py
+    python Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/calibracao.py
 """
 from dataclasses import dataclass
 from pathlib import Path
@@ -25,7 +25,7 @@ import pandas as pd
 
 from modelo import Economia, Politica, estado_estacionario
 
-DADOS = Path(__file__).resolve().parents[3] / "dados" / "brasil" / "brasil_anual.csv"
+DADOS = Path(__file__).resolve().parents[5] / "dados" / "brasil" / "brasil_anual.csv"
 
 # Rabelo (2025), Cadernos de Finanças Públicas 25(3), Gráfico 4: a alíquota
 # média sobre a renda bruta do capital oscila entre cerca de 13% e 23% em
