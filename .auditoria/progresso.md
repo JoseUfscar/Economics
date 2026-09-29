@@ -17,9 +17,9 @@ só `resultados/` e `figuras/`.
 - [~] 6. ABM 2 longo prazo e sensibilidade com mais sementes e erros-padrão
 - [x] 7. Equilíbrio geral: `experimentos_ha.py` grava CSV com o resumo; variante com R$ 25,84 bi para o grupo intermediário e o resto uniforme; `lei_com_leiloeiro.py` lê o CSV em vez de números digitados
 - [x] 8. Nota técnica: todas as correções da seção 2 e 3 da auditoria, Chamley-Judd, mapeamento da lei, hipótese do desempregado que produz, bibliografia; recompilar o PDF
-- [ ] 9. READMEs: corrigir números e afirmações (seção 2), pares da previsão, informação rígida, heurísticas; referências completas
-- [ ] 10. Escrita: reescrever os READMEs sem os padrões da seção 5
-- [ ] 11. Repositório: .gitignore, versões usadas, CI, CITATION.cff
+- [~] 9. READMEs: corrigir números e afirmações (seção 2), pares da previsão, informação rígida, heurísticas; referências completas
+- [~] 10. Escrita: reescrever os READMEs sem os padrões da seção 5
+- [x] 11. Repositório: .gitignore, versões usadas, CI, CITATION.cff
 - [ ] 12. Revisão final: testes, conferência dos números nos textos, tirar a pasta `.auditoria/`
 
 ## Fora do escopo desta rodada (seção 6 da auditoria, extensões)
@@ -48,3 +48,12 @@ Licença: decisão do autor (falta escolher).
 - LaTeX: apt-get install texlive-latex-base texlive-latex-recommended
   texlive-latex-extra texlive-lang-portuguese texlive-fonts-recommended
   lmodern latexmk; compilar numa cópia e copiar só o PDF.
+- Bloco 11 no commit 75cbc6c (workflow do GitHub Actions aceito no push).
+- Blocos 9 e 10: prontos e no commit ff6b88d os READMEs do equilíbrio
+  geral, ABM 1, dsge, dsge_busca e referências. O README da lei está
+  reescrito localmente com o marcador %%ABM2%% esperando os números novos.
+  Faltam: README da lei (seção ABM 2), ABM 2, previsão, macroeconomia e raiz.
+- Achado novo com 4 sementes no longo prazo do ABM 2: com aprendizado, o
+  desvio do desemprego sobe para 0,84 p.p. (erro-padrão 0,62); uma semente
+  teve um episódio grande de desemprego. A frase "o desemprego quase não se
+  mexe" precisa de qualificação.
