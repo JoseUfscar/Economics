@@ -13,13 +13,14 @@ só `resultados/` e `figuras/`.
 - [x] 2. Avaliação: Clark-West para os pares aninhados (média e VAR(1) contra o AR(1)); p-valor de Holm entre modelos
 - [x] 3. Previsões registradas: tirar ABM 2 com heurísticas e com atenção limitada, com a explicação
 - [x] 4. Reestimar os modelos que usam o desemprego e refazer tabelas e figuras (resultados copiados para o repositório; desemprego avaliado a partir de 2014T4, `PRIMEIRA_ORIGEM_DESEMPREGO` em comparacao.py)
-- [~] 5. Lei no ABM 2: regra de devolução e aquecimento (ver notas); falta rodar `experimentos_ha.py` e `lei_sem_leiloeiro.py` (96 sementes) e escrever a seção do ABM 2 no README da lei
+- [~] 5. Lei no ABM 2: regra de devolução, aquecimento e placebo (ver notas); `experimentos_ha.py` rodado e commitado; falta a rodada de `lei_sem_leiloeiro.py` com placebo (96 sementes, ~30 min) e a seção do ABM 2 no README da lei
 - [x] 6. ABM 2 longo prazo e sensibilidade com quatro sementes e erros-padrão (resultados copiados; README do ABM 2 reescrito)
 - [x] 7. Equilíbrio geral: CSV com o resumo; variante com R$ 25,84 bi; `lei_com_leiloeiro.py` lê o CSV
-- [x] 8. Nota técnica corrigida e PDF recompilado (falta acrescentar a variante "isenção, só a receita nova" quando ela rodar)
-- [~] 9. READMEs: previsão, ABM 2, macroeconomia, raiz e Econometria reescritos (não commitados ainda); falta a seção do ABM 2 no README da lei (%%ABM2%%)
+- [x] 8. Nota técnica corrigida e PDF recompilado, com a variante "isenção, só a receita nova"
+- [~] 9. READMEs: previsão, ABM 2, macroeconomia, raiz e Econometria reescritos e commitados; falta a seção do ABM 2 no README da lei (%%ABM2%%)
 - [~] 10. Escrita: idem
-- [ ] Commit e push de tudo o que está pendente (o Bash ficou fora do ar; `git status` primeiro)
+- [x] Commit e push do que estava pendente
+- [x] Teste instável na CI (test_reproduz_pib_gasto_e_desemprego): 16 mil famílias, limite 0,15
 - [x] 11. Repositório: .gitignore, versões usadas, CI, CITATION.cff
 - [ ] 12. Revisão final: testes, conferência dos números nos textos, tirar a pasta `.auditoria/`
 
@@ -71,3 +72,11 @@ Licença: decisão do autor (falta escolher).
   aprendizado 0,75 (0,83). Viés do desemprego em h=8 sem pandemia: busca
   -0,64, ABM 2 aprendizado -1,34, AR(1) -2,34. Cobertura do PIB em h=8: 70% a
   81%; do desemprego em h=4: 65% a 77%.
+- Lei no ABM 2, rodada de 96 sementes sem placebo (antes do commit 3b177b9):
+  a média dos ganhos individuais saiu enviesada para cima (50% mais pobres
+  +2,28 com devolução uniforme, erro-padrão 0,56), porque os caminhos de
+  cada família divergem entre as cópias e o ganho individual é convexo na
+  razão dos bem-estares (Jensen). O ganho utilitário por grupo fica perto do
+  Aiyagari: uniforme +1,07 (0,56) / -0,17 / -0,46 / +0,82; isenção -0,57
+  (0,50) / +0,80 / -0,45 / -0,34. Por isso o placebo e o ganho utilitário
+  como medida principal.
