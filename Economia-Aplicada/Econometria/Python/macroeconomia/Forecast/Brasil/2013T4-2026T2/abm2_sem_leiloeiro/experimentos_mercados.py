@@ -192,7 +192,7 @@ def figura_longo_prazo(eco: DC.Economia, h: pd.DataFrame, destino: Path) -> None
         ax.axhline(referencia, color=TINTA_2, linestyle="--", linewidth=0.9)
         ax.set_ylabel(rotulo)
         _virgula(ax)
-    eixos[0].set_title("Sem leiloeiro, com aprendizado: o que emerge sem choques agregados")
+    eixos[0].set_title("Sem leiloeiro, com aprendizado e sem choques agregados")
     eixos[2].set_xlabel("anos")
     fig.tight_layout()
     fig.savefig(destino)

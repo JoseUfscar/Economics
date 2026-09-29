@@ -1,16 +1,19 @@
 """
 Equilíbrio geral estocástico com margem e busca no mercado de trabalho: a
-versão de dsge.py com os mesmos fundamentos do ABM sem leiloeiro
-(abm2_sem_leiloeiro/descentralizada.py), para que a diferença entre os dois na previsão
-meça a falta de coordenação, e não hipóteses diferentes.
+versão de dsge.py com os fundamentos do ABM sem leiloeiro
+(abm2_sem_leiloeiro/descentralizada.py), para aproximar os dois modelos que a
+previsão compara. Os dois ainda diferem em muito mais que o leiloeiro:
+agente representativo contra famílias heterogêneas, linearização, a forma de
+estimar os choques e as séries observadas.
 
 O que muda em relação a dsge.py:
 
   margem     concorrência monopolística: as firmas cobram uma margem mu sobre
              o custo marginal, então capital e trabalho recebem o produto
-             marginal dividido por 1 + mu. A margem é a que emerge no ABM sem
+             marginal dividido por 1 + mu. A margem é a que aparece no ABM sem
              leiloeiro (cerca de 10%). A tecnologia (alpha) é a mesma dos
-             outros modelos, e a margem reduz a participação do trabalho.
+             outros modelos, e a margem reduz a participação do trabalho para
+             cerca de 50%, abaixo dos 54,9% da PWT com que alpha é calibrado.
   busca      o emprego N é uma variável de estado. A cada trimestre uma
              fração s dos empregados perde o emprego e uma fração f dos
              desempregados do trimestre anterior é contratada (quem acabou de

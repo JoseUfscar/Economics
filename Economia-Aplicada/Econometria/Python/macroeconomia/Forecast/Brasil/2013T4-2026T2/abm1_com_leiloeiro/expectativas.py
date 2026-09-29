@@ -17,7 +17,10 @@ tradicional às hipóteses de racionalidade limitada da literatura recente:
   AtencaoLimitada     desconto cognitivo: percebe só uma fração m dos desvios
                       em relação ao equilíbrio (Gabaix, 2020)
   InformacaoRigida    a cada trimestre só uma fração lambda das famílias
-                      atualiza a informação (Mankiw e Reis, 2002; Carroll, 2003)
+                      atualiza a previsão, e quem atualiza adota a do
+                      aprendizado (Carroll, 2003, com a rigidez de Mankiw e
+                      Reis, 2002; em Mankiw e Reis, quem atualiza passa a ter
+                      expectativas racionais)
   Heuristicas         escolha entre regras pelo desempenho passado das
                       previsões, com logit (Brock e Hommes, 1997; Anufriev e
                       Hommes, 2012)
@@ -104,7 +107,9 @@ class InformacaoRigida:
     """
     Cada família revê a informação com probabilidade `lam` por trimestre;
     quem revê adota a previsão da regra `base` naquele momento, quem não revê
-    mantém a da última revisão.
+    mantém a da última revisão. A regra base é o aprendizado, como os
+    domicílios de Carroll (2003), que copiam a previsão corrente dos
+    profissionais; não é a expectativa racional de Mankiw e Reis (2002).
     """
 
     nome = "informação rígida"
