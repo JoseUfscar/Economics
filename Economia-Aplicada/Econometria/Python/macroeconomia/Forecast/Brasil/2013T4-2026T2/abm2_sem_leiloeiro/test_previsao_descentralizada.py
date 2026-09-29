@@ -33,7 +33,7 @@ class Base(unittest.TestCase):
 
 class TestHistoria(Base):
     def test_reproduz_pib_gasto_e_desemprego(self):
-        _, hist = PD.historia(self.eco, self.amostra, X.Aprendizado(), 4000, semente=1, aquecimento=40)
+        _, hist = PD.historia(self.eco, self.amostra, X.Aprendizado(), 16000, semente=1, aquecimento=40)
         pib = np.diff(np.log(hist.y) + hist.log_X)
         np.testing.assert_allclose(100 * pib, self.amostra.pib.to_numpy()[1:], atol=1e-9)
         gasto = np.diff(np.log(hist.G_pedido) + hist.log_X)
@@ -41,7 +41,13 @@ class TestHistoria(Base):
         alvo = self.amostra[protocolo.TAXA_DESEMPREGO]
         com_pnad = alvo.notna()
         erro = 100 * hist.desemprego[com_pnad] - alvo[com_pnad]
-        self.assertLess(erro.abs().mean(), 0.2)       # 4 mil famílias: 0,1 p.p. de ruído amostral
+        # A separação é achada com os números aleatórios do trimestre, mas o
+        # desemprego muda aos saltos com ela, e sobra um erro que depende do
+        # caminho da simulação. Com 16 mil famílias, o erro médio fica entre
+        # 0,04 e 0,08 p.p. nas sementes 1 a 10; com 4 mil, entre 0,10 e 0,26,
+        # e uma diferença de arredondamento entre máquinas bastava para
+        # passar do limite.
+        self.assertLess(erro.abs().mean(), 0.15)
         # Antes da PNAD, a separação é a da cadeia calibrada.
         antes = hist.probabilidade_separacao[~com_pnad]
         np.testing.assert_allclose(antes, self.eco.fluxos.separacao)
