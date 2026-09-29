@@ -9,9 +9,9 @@ só `resultados/` e `figuras/`.
 
 ## Blocos
 
-- [ ] 1. Previsão: dessazonalização do desemprego em tempo real (só com dados até a origem), teste que altera a PNAD bruta
-- [ ] 2. Avaliação: Clark-West para os pares aninhados (média e VAR(1) contra o AR(1)); p-valor de Holm entre modelos
-- [ ] 3. Previsões registradas: tirar ABM 2 com heurísticas e com atenção limitada, com a explicação
+- [x] 1. Previsão: dessazonalização do desemprego em tempo real (só com dados até a origem), teste que altera a PNAD bruta
+- [x] 2. Avaliação: Clark-West para os pares aninhados (média e VAR(1) contra o AR(1)); p-valor de Holm entre modelos
+- [x] 3. Previsões registradas: tirar ABM 2 com heurísticas e com atenção limitada, com a explicação
 - [ ] 4. Reestimar os modelos que usam o desemprego (media ar1 eg_busca eg_busca_trim abm2_*) e refazer tabelas e figuras
 - [ ] 5. Lei no ABM 2: mesma regra de devolução do Aiyagari e do ABM 1 (a variação da transferência em relação à economia sem reforma segue os pesos); 100 anos de aquecimento antes da reforma; rodar de novo
 - [ ] 6. ABM 2 longo prazo e sensibilidade com mais sementes e erros-padrão
@@ -31,3 +31,10 @@ margem, crédito e política monetária no ABM 2, Focus, safras, PIT.
 Licença: decisão do autor (falta escolher).
 
 ## Notas de andamento
+- Blocos 1 a 3 no commit 4cab09e. O bloco 4 roda numa cópia (comparacao.py
+  --modelos media ar1 eg_busca eg_busca_trim abm2_eq abm2_apr abm2_heu abm2_inf
+  abm2_aten --processos 4); se a sessão cair, rodar de novo e copiar
+  resultados/ e figuras/ da previsão.
+- Holm: família = todos os modelos comparados à mesma referência, por variável
+  e horizonte. `p_teste` = Clark-West (unilateral) para média e VAR(1), DM nos
+  outros.
