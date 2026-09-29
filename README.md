@@ -108,7 +108,9 @@ compras em poucos fornecedores, o desemprego fica em 10% (9,7% na PNAD), as
 firmas cobram margens de 10% sobre o custo, o salário real fica 10% a 11%
 menor que no equilíbrio walrasiano, e o produto oscila mesmo sem choques
 externos. Em raras simulações, o modelo também produz crises de desemprego
-profundas.
+profundas. Com a Lei 15.270/2025, quem ganha e quem perde é o mesmo do
+Aiyagari, mas o ruído da própria economia deixa, na metade mais pobre, um
+erro-padrão do tamanho do efeito, mesmo com 96 simulações.
 
 ![Bem-estar por grupo com cada regra de expectativas](Economia-Aplicada/Econometria/Python/macroeconomia/Politicas/Lei-15270/abm1_com_leiloeiro/figuras/lei_bem_estar.png)
 

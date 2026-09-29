@@ -32,7 +32,7 @@ esse viés. O ganho utilitário de cada grupo, que soma o bem-estar das
 famílias antes de convertê-lo em consumo, quase não sofre dele e é a
 medida principal aqui.
 
-Rode a partir da pasta Econometria/ (cerca de 30 minutos com 4 núcleos):
+Rode a partir da pasta Econometria/ (cerca de 20 minutos com 4 núcleos):
 
     python Python/macroeconomia/Politicas/Lei-15270/abm2_sem_leiloeiro/lei_sem_leiloeiro.py
 """
