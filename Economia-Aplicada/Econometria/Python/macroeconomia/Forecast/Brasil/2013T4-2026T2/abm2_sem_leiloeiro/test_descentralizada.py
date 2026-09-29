@@ -2,14 +2,12 @@
 
     python -m unittest discover -s Python/macroeconomia/Forecast/Brasil/2013T4-2026T2/abm2_sem_leiloeiro -v
 """
-import copy
 import sys
 import unittest
 from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4]))   # macroeconomia/
 import caminhos  # noqa: E402,F401
@@ -220,29 +218,20 @@ class TestTrimestre(Base):
             self.assertLessEqual(razao, limite + 1e-12, nome)
             self.assertLess(razao, 0.7 * np.log(e.w.max() / e.w.min()), nome)
 
-    def test_so_a_mudanca_do_orcamento_segue_os_pesos_da_reforma(self):
-        # Com a transferência da economia sem reforma como base, trocar os pesos
-        # da devolução para só o grupo intermediário não muda nada quando a
-        # reforma não muda o orçamento. Sem a base, a transferência inteira
-        # segue os pesos, como no ABM com leiloeiro.
+    def test_so_a_receita_nova_segue_os_pesos_da_reforma(self):
+        # Sem receita nova, trocar os pesos da devolução para só o grupo
+        # intermediário não muda nada: o resto do orçamento continua dividido
+        # igualmente entre todos.
         pesos = np.array([0, 0, 0, 1, 0, 0, 0, 0, 0], dtype=float)   # a devolução por isenção da lei
-        eco1 = replace(self.eco, cal=replace(self.cal, pesos=pesos / (self.cal.renda.pi @ pesos)))
-        rng = np.random.default_rng(8)
-        e0 = DC.estado_inicial(self.eco, X.Aprendizado(), 2000, rng)
-        estado_rng = rng.bit_generator.state
-        historias = {}
-        for nome, eco, com_base in (("base", self.eco, False), ("pesos com base", eco1, True),
-                                    ("pesos sem base", eco1, False)):
-            rng.bit_generator.state = estado_rng
-            e, linhas = copy.deepcopy(e0), []   # as crenças mudam no lugar
-            for t in range(12):
-                base = historias["base"].transferencia.iloc[t] if com_base else None
-                e, registro = DC.trimestre(eco, e, rng, self.cal.par.g * self.cal.par.periodo,
-                                           self.cal.par.gasto, transferencia_base=base)
-                linhas.append(registro)
-            historias[nome] = pd.DataFrame(linhas)
-        np.testing.assert_array_equal(historias["pesos com base"].to_numpy(), historias["base"].to_numpy())
-        self.assertFalse(np.allclose(historias["pesos sem base"].C, historias["base"].C))
+        cal1 = replace(self.cal, pesos=pesos / (self.cal.renda.pi @ pesos))
+        eco1 = replace(self.eco, cal=cal1, tau_k_base=self.cal.par.tau_k)
+        historias = []
+        for eco in (self.eco, eco1):
+            rng = np.random.default_rng(8)
+            e = DC.estado_inicial(self.eco, X.Aprendizado(), 2000, rng)
+            _, h = DC.simular(eco, e, rng, 12)
+            historias.append(h)
+        np.testing.assert_array_equal(historias[1].to_numpy(), historias[0].to_numpy())
 
     def test_numeros_aleatorios_comuns(self):
         historias = []

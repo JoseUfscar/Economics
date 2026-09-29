@@ -15,7 +15,8 @@ import caminhos  # noqa: E402,F401
 import dsge  # noqa: E402
 import protocolo  # noqa: E402
 from calibracao import calcular_alvos  # noqa: E402
-from comparacao import efeito_lei, sem_pandemia, somar_trimestres  # noqa: E402
+from comparacao import (PRIMEIRA_ORIGEM_DESEMPREGO, efeito_lei, janela_de_avaliacao,  # noqa: E402
+                        sem_pandemia, somar_trimestres)
 
 
 class TestDados(unittest.TestCase):
@@ -142,6 +143,13 @@ class TestSemOlharOFuturo(unittest.TestCase):
 
 
 class TestAuxiliares(unittest.TestCase):
+    def test_janela_do_desemprego(self):
+        previsoes = pd.DataFrame({"origem": [201304, 201304, 201404, 201404],
+                                  "variavel": ["desemprego", "pib", "desemprego", "pib"]})
+        mantidas = janela_de_avaliacao(previsoes)
+        self.assertEqual(len(mantidas), 3)
+        self.assertTrue((mantidas[mantidas.variavel == "desemprego"].origem >= PRIMEIRA_ORIGEM_DESEMPREGO).all())
+
     def test_somar_trimestres(self):
         self.assertEqual(somar_trimestres(202604, 1), 202701)
         self.assertEqual(somar_trimestres(202601, -1), 202504)

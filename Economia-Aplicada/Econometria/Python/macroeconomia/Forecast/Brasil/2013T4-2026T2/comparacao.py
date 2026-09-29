@@ -46,6 +46,11 @@ from modelo import estado_estacionario
 
 PASTA = Path(__file__).resolve().parent
 PRIMEIRA_ORIGEM = 201304
+# O desemprego só é avaliado a partir das origens com três anos de PNAD
+# (desde 2012T1). Antes disso, a dessazonalização feita só com o passado se
+# apoia em oito a onze trimestres, e o AR(1) da variação, estimado com menos
+# de dez pontos, chega a ser explosivo (em 2013T4, coeficiente de -2,4).
+PRIMEIRA_ORIGEM_DESEMPREGO = 201404
 PANDEMIA = (202002, 202004)   # trimestres da queda e da recuperação mais bruscas
 NOMES = {"pib": "PIB", "consumo": "Consumo das famílias", "investimento": "FBCF",
          "governo": "Consumo do governo", "desemprego": "Desemprego (variação, p.p.)"}
@@ -117,6 +122,12 @@ def sem_pandemia(previsoes: pd.DataFrame) -> pd.DataFrame:
     inicio = [somar_trimestres(o, 1) for o in previsoes.origem]
     toca = (np.array(inicio) <= PANDEMIA[1]) & (np.array(fim) >= PANDEMIA[0])
     return previsoes[~toca]
+
+
+def janela_de_avaliacao(previsoes: pd.DataFrame) -> pd.DataFrame:
+    """Tira as previsões do desemprego feitas antes de PRIMEIRA_ORIGEM_DESEMPREGO."""
+    cedo = (previsoes.variavel == protocolo.DESEMPREGO) & (previsoes.origem < PRIMEIRA_ORIGEM_DESEMPREGO)
+    return previsoes[~cedo]
 
 
 def tabela_horizontes(avaliacao: pd.DataFrame, coluna: str, horizontes=(1, 4, 8)) -> pd.DataFrame:
@@ -214,7 +225,7 @@ def relatorio(previsoes: pd.DataFrame) -> None:
     pasta_res, pasta_fig = PASTA / "resultados", PASTA / "figuras"
     pasta_fig.mkdir(exist_ok=True)
     lista = sorted(previsoes.origem.unique())
-    fora = previsoes[previsoes.origem < lista[-1]]   # a última origem não tem realizado
+    fora = janela_de_avaliacao(previsoes[previsoes.origem < lista[-1]])   # a última origem não tem realizado
     completa, filtrada = resumo(fora), resumo(sem_pandemia(fora))
     completa.to_csv(pasta_res / "avaliacao.csv", index=False, float_format="%.6g")
     filtrada.to_csv(pasta_res / "avaliacao_sem_pandemia.csv", index=False, float_format="%.6g")
