@@ -21,29 +21,34 @@ macroeconomia/
 └── rodar_testes.py                 roda os testes de todas as pastas
 ```
 
-- **[Lei 15.270/2025](Politicas/Lei-15270/README.md):** quanto a economia
-  perde com um aumento da tributação da renda do capital do tamanho da lei,
-  quem ganha e quem perde, e se as conclusões valem quando as famílias não
-  são plenamente racionais e quando os preços não vêm de um equilíbrio.
-- **[Previsão fora da amostra](Forecast/Brasil/2013T4-2026T2/README.md):**
-  os modelos de equilíbrio geral e os ABMs contra modelos estatísticos,
-  prevendo PIB, consumo, FBCF, consumo do governo e desemprego de 1 a 8
-  trimestres à frente, com o que se sabia em cada data.
+A pasta da [Lei 15.270/2025](Politicas/Lei-15270/README.md) mede quanto a
+economia perde com um aumento da tributação da renda do capital do tamanho da
+lei, quem ganha e quem perde, e se os resultados mudam quando as famílias não
+são plenamente racionais e quando os preços não vêm de um equilíbrio. A da
+[previsão fora da amostra](Forecast/Brasil/2013T4-2026T2/README.md) compara os
+modelos de equilíbrio geral e os ABMs com modelos estatísticos, prevendo PIB,
+consumo, FBCF, consumo do governo e desemprego de 1 a 8 trimestres à frente,
+com o que se sabia em cada data.
 
-Os modelos se usam uns aos outros: os de previsão partem da calibração do
-equilíbrio geral da pasta da lei, e os experimentos da lei nos ABMs usam o
-código dos ABMs da pasta de previsão. Cada script põe as pastas no caminho
-de importação com `caminhos.py`, então todos rodam de qualquer lugar.
+As duas pastas dependem uma da outra: os modelos de previsão partem da
+calibração do equilíbrio geral da pasta da lei, e os experimentos da lei nos
+ABMs usam o código dos ABMs da pasta de previsão. Cada script põe as pastas
+no caminho de importação com `caminhos.py`, então todos rodam de qualquer
+lugar.
 
 ## Como rodar
 
-Da pasta `Econometria/`, com as dependências de `Python/requirements.txt`:
+Da pasta `Econometria/`, com as dependências de `Python/requirements.txt` (ou,
+para reproduzir os resultados até a última casa, as versões exatas de
+`Python/requirements-versoes.txt`):
 
 ```bash
 python Python/macroeconomia/rodar_testes.py                  # todos os testes (cerca de 10 minutos)
 python Python/macroeconomia/rodar_testes.py dsge_busca       # só as pastas com esse nome
 ```
 
-Os comandos de cada modelo estão no README de cada pasta. Os dados ficam em
+Os testes também rodam a cada push, pelo GitHub Actions
+(`.github/workflows/testes.yml`, na raiz do repositório). Os comandos de cada
+modelo estão no README de cada pasta. Os dados ficam em
 [`dados/brasil/`](../../dados/brasil/README.md), com os scripts que os
 baixam.
