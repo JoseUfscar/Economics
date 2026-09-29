@@ -1,0 +1,5 @@
+economia,produto,capital,salário real,juro líquido (%),desemprego (%),margem (%),participação do trabalho (%),famílias racionadas (%),ficaram sem comprar tudo (%),procura até 1 ano (%),procura 1 a 2 anos (%),procura 2 anos ou mais (%),desvio do crescimento anual (p.p.),autocorrelação do crescimento,desvio do desemprego (p.p.),coeficiente de Okun,correlação vagas x desemprego
+referência walrasiana (PNAD),1,1,1,10.2372,9.70179,0,54.8862,0,0,63.8896,14.4431,21.6673,,,,,
+"sem leiloeiro, aprendizado",0.966962,0.870247,0.897855,10.5051,9.97953,10.1631,50.8494,41.5565,3.75e-05,63.2655,14.4559,22.2785,1.37499,0.0157739,0.186755,-0.00788812,-0.179666
+"sem leiloeiro, heurísticas",0.948669,0.846963,0.880702,10.6344,9.96803,10.3792,50.8295,41.9641,3.75e-05,63.1532,14.4539,22.3929,1.42047,0.0323371,0.179454,-0.00998816,-0.111252
+"sem leiloeiro, atenção limitada",0.956537,0.853053,0.885843,10.7403,9.94786,10.5065,50.772,42.3418,0.0001,63.2028,14.4651,22.3321,1.26024,-0.0264149,0.182599,0.00346853,0.0333467

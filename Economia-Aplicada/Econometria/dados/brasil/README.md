@@ -1,7 +1,7 @@
 # Dados anuais do Brasil
 
 Séries reais usadas na calibração do modelo de equilíbrio geral
-(`Python/macroeconomia/equilibrio_geral/`). O arquivo `brasil_anual.csv` é
+(`Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/`). O arquivo `brasil_anual.csv` é
 gerado por `baixar_dados.py` e fica versionado, para que o projeto rode sem
 internet e com números reproduzíveis. Para atualizar:
 
@@ -48,6 +48,25 @@ python3 dados/brasil/baixar_pnad.py
 | anual | `gini_renda_domiciliar_pc` | índice de Gini do rendimento domiciliar per capita | 7435 |
 
 Série trimestral de 2012T1 a 2026T2; anual de 2012 a 2025.
+
+## Contas Nacionais Trimestrais (`contas_trimestrais.csv`)
+
+Gerado por `baixar_trimestrais.py` (API do SIDRA/IBGE), para a avaliação de
+previsões fora da amostra (`Python/macroeconomia/Forecast/Brasil/2013T4-2026T2/`):
+
+```
+python3 dados/brasil/baixar_trimestrais.py
+```
+
+| coluna | descrição | tabela SIDRA |
+|---|---|---|
+| `volume_*` | série encadeada do índice de volume com ajuste sazonal (média de 1995 = 100) | 1621 |
+| `nominal_*` | valores a preços correntes, R$ milhões | 1846 |
+
+Cada grupo tem PIB a preços de mercado (`pib`), consumo das famílias
+(`consumo_familias`), consumo da administração pública (`consumo_governo`) e
+formação bruta de capital fixo (`fbcf`). Série de 1996T1 a 2026T2, extraída
+em setembro de 2026.
 
 ## Observações
 

@@ -1,6 +1,6 @@
 """
 Baixa séries da PNAD Contínua (IBGE) usadas na calibração do risco de renda
-do modelo de Aiyagari (Python/macroeconomia/equilibrio_geral/aiyagari.py).
+do modelo de Aiyagari (Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/aiyagari.py).
 
     dados/brasil/pnad_trimestral.csv  taxa de desocupação e tempo de procura
     dados/brasil/pnad_anual.csv       massa de rendimento do trabalho por

@@ -14,7 +14,7 @@ desempregada, a família recebe uma fração `razao` da renda do seu tipo.
 
 Rode a partir da pasta Econometria/:
 
-    python Python/macroeconomia/equilibrio_geral/calibracao_renda.py
+    python Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/calibracao_renda.py
 """
 from dataclasses import dataclass
 from pathlib import Path
@@ -25,7 +25,7 @@ from scipy.optimize import least_squares
 
 from aiyagari import Renda
 
-PASTA_DADOS = Path(__file__).resolve().parents[3] / "dados" / "brasil"
+PASTA_DADOS = Path(__file__).resolve().parents[5] / "dados" / "brasil"
 CORTES = np.array([0.0, 1 / 12, 1.0, 2.0, np.inf])   # faixas de tempo de procura, em anos
 COLUNAS_PROCURA = ["procura_menos_de_1_mes", "procura_1_mes_a_1_ano",
                    "procura_1_a_2_anos", "procura_2_anos_ou_mais"]

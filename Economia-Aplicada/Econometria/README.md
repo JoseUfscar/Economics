@@ -29,7 +29,11 @@ Cada pasta de linguagem tem as mesmas quatro áreas como subpastas:
 Essas quatro áreas foram o ponto de partida; para adicionar uma nova área
 (ex: comércio internacional, organização industrial), basta criar a mesma
 subpasta em cada linguagem que for usá-la. A primeira área nova é
-`macroeconomia/` (Python e Julia), com modelos de equilíbrio geral.
+`macroeconomia/` (Python e Julia), com modelos de equilíbrio geral, modelos
+baseados em agentes e uma avaliação de previsões fora da amostra. Em Python,
+ela se divide em [`Politicas/Lei-15270/`](Python/macroeconomia/Politicas/Lei-15270/README.md)
+e [`Forecast/Brasil/2013T4-2026T2/`](Python/macroeconomia/Forecast/Brasil/2013T4-2026T2/README.md)
+(ver [`Python/macroeconomia/`](Python/macroeconomia/README.md)).
 
 ## Datasets compartilhados (`dados/`)
 
@@ -57,7 +61,7 @@ instruções específicas de setup e execução.
 
 ## Equilíbrio geral em tempo contínuo
 
-[Tributação do capital no Brasil em equilíbrio geral](Python/macroeconomia/equilibrio_geral/README.md):
+[Tributação do capital no Brasil em equilíbrio geral](Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/README.md):
 modelos em tempo contínuo calibrados com dados da PWT 11.0, do Ipea e do IBGE
 para medir os efeitos de um aumento da tributação da renda do capital do
 tamanho da Lei 15.270/2025. A primeira parte usa o modelo de
@@ -66,5 +70,32 @@ estrutural com Monte Carlo e uma versão em Julia que confere os resultados com
 outro algoritmo). A segunda usa famílias heterogêneas (modelo de Aiyagari,
 resolvido pelas equações de Hamilton–Jacobi–Bellman e Kolmogorov, com risco de
 desemprego e desigualdade calibrados com a PNAD Contínua) para mostrar quem
-ganha e quem perde. A [nota técnica](Python/macroeconomia/equilibrio_geral/nota_tecnica.pdf)
+ganha e quem perde. A [nota técnica](Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/nota_tecnica.pdf)
 traz a derivação completa.
+
+## Modelos baseados em agentes
+
+[ABM com microfundamentação neoclássica](Python/macroeconomia/Forecast/Brasil/2013T4-2026T2/abm1_com_leiloeiro/README.md):
+20 mil famílias com o mesmo problema de consumo e poupança do Aiyagari, em
+trimestres, com expectativas que vão da previsão perfeita à racionalidade
+limitada (aprendizado adaptativo, heurísticas com troca à la Brock e Hommes,
+informação rígida e atenção limitada). Com previsão perfeita, o ABM reproduz
+os efeitos da Lei 15.270/2025 do modelo contínuo; com as outras regras, quem
+ganha e quem perde não muda, mas o tamanho dos efeitos e o caminho do capital
+mudam. Partindo de longe do equilíbrio, o capital e a desigualdade voltam
+sozinhos com racionalidade limitada; com crenças fixas, a economia para em
+outro lugar. Numa [versão sem leiloeiro](Python/macroeconomia/Forecast/Brasil/2013T4-2026T2/abm2_sem_leiloeiro/README.md),
+com firmas que fixam preços e salários e busca por emprego, o desemprego
+emerge perto do da PNAD e as firmas passam a ter poder de mercado. Os
+experimentos da lei nos dois ABMs estão em
+[`Politicas/Lei-15270/`](Python/macroeconomia/Politicas/Lei-15270/README.md).
+
+## Previsão fora da amostra
+
+[Equilíbrio geral e ABMs contra modelos estatísticos](Python/macroeconomia/Forecast/Brasil/2013T4-2026T2/README.md):
+as Contas Nacionais Trimestrais de 1996 a 2026 e o desemprego da PNAD,
+previsões de 1 a 8 trimestres em 50 origens desde 2013, cada modelo usando
+só o que se sabia em cada data, e previsões registradas para 2026-2028. Os
+modelos formam dois pares com os mesmos fundamentos: o equilíbrio geral
+contra o ABM com leiloeiro, e o equilíbrio geral com margem e busca contra o
+ABM sem leiloeiro.

@@ -14,8 +14,8 @@ quadrático médio e cobertura dos intervalos de 95%.
 
 Rode a partir da pasta Econometria/:
 
-    python Python/macroeconomia/equilibrio_geral/estimacao.py
-    python Python/macroeconomia/equilibrio_geral/estimacao.py --replicas 200
+    python Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/estimacao.py
+    python Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/estimacao.py --replicas 200
 """
 import argparse
 from dataclasses import replace

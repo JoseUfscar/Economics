@@ -1,6 +1,6 @@
 """
 Baixa as séries anuais do Brasil usadas na calibração do modelo de equilíbrio
-geral (Python/macroeconomia/equilibrio_geral) e grava dados/brasil/brasil_anual.csv.
+geral (Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral) e grava dados/brasil/brasil_anual.csv.
 
 Fontes:
   - Penn World Table 11.0 (Feenstra, Inklaar e Timmer), pelas séries que o

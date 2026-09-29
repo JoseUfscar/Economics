@@ -19,10 +19,14 @@ python3 Python/financas/capm.py
 python3 Python/trabalho_desenvolvimento/diff_in_diff.py
 ```
 
-Os [modelos de equilíbrio geral](macroeconomia/equilibrio_geral/README.md)
-(`macroeconomia/equilibrio_geral/`, agente representativo e famílias
-heterogêneas) têm instruções próprias para calibração, experimentos, estimação
-e testes; rode os comandos deles também a partir da pasta `Econometria/`.
+Os modelos de [`macroeconomia/`](macroeconomia/README.md) têm instruções
+próprias: a [Lei 15.270/2025](macroeconomia/Politicas/Lei-15270/README.md)
+(`macroeconomia/Politicas/Lei-15270/`, com os modelos de equilíbrio geral em
+tempo contínuo) e a [previsão fora da
+amostra](macroeconomia/Forecast/Brasil/2013T4-2026T2/README.md)
+(`macroeconomia/Forecast/Brasil/2013T4-2026T2/`, com os DSGEs e os modelos
+baseados em agentes). Rode os comandos deles também a partir da pasta
+`Econometria/`.
 
 ## Bibliotecas
 
