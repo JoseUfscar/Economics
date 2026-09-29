@@ -12,6 +12,10 @@ e consumo do governo de T+1 a T+h, h = 1..8, com média e desvio-padrão. Os
 modelos que têm desemprego (o equilíbrio geral com busca e o ABM sem
 leiloeiro) e as referências univariadas preveem também a variação da taxa
 de desemprego de T a T+h, em p.p., com a PNAD Contínua (desde 2012).
+
+A taxa de desemprego que cada modelo vê é dessazonalizada só com a PNAD até
+T (`ate_a_origem`). O realizado, com que as previsões são comparadas, é a
+taxa dessazonalizada com a amostra inteira.
 """
 from __future__ import annotations
 
@@ -39,6 +43,7 @@ SERIES = {"pib": "volume_pib", "consumo": "volume_consumo_familias",
           "investimento": "volume_fbcf", "governo": "volume_consumo_governo"}
 DESEMPREGO = "desemprego"              # variação da taxa, em p.p.
 TAXA_DESEMPREGO = "taxa_desemprego"    # nível, em %
+TAXA_BRUTA = "taxa_desemprego_bruta"   # nível sem ajuste sazonal, em %
 VARIAVEIS = (*SERIES, DESEMPREGO)
 HORIZONTE = 8
 DEFASAGEM_ANUAL = 2
@@ -58,33 +63,59 @@ def dessazonalizar(serie: pd.Series) -> pd.Series:
     """
     Decomposição clássica aditiva de uma série trimestral: a tendência é a
     média móvel centrada 2x4, e o fator de cada trimestre do ano é a média
-    do desvio em relação a ela, com soma zero. Os fatores usam a amostra
-    inteira, como os das Contas Nacionais dessazonalizadas pelo IBGE que os
-    outros dados usam (a safra atual).
+    do desvio em relação a ela, com soma zero. Os fatores usam toda a série
+    recebida; para não olhar o futuro, passe só a parte até a origem
+    (`ate_a_origem` faz isso). Um trimestre do ano sem nenhum desvio
+    calculado, o que só acontece em séries muito curtas, fica com fator zero.
     """
     pesos = np.array([1, 2, 2, 2, 1]) / 8
     tendencia = pd.Series(np.convolve(serie.to_numpy(), pesos, mode="same"), index=serie.index)
     tendencia.iloc[:2] = tendencia.iloc[-2:] = np.nan
     trimestre = serie.index % 100
-    fator = (serie - tendencia).groupby(trimestre).mean()
+    fator = (serie - tendencia).groupby(trimestre).mean().reindex([1, 2, 3, 4]).fillna(0.0)
     fator -= fator.mean()
     return serie - fator.loc[trimestre].to_numpy()
 
 
+def carregar_taxa_bruta(caminho: Path = DADOS_PNAD) -> pd.Series:
+    """Taxa de desemprego da PNAD Contínua sem ajuste sazonal, em %."""
+    return pd.read_csv(caminho, index_col="trimestre").taxa_desocupacao.rename(TAXA_BRUTA)
+
+
 def carregar_taxa_desemprego(caminho: Path = DADOS_PNAD) -> pd.Series:
-    """Taxa de desemprego dessazonalizada da PNAD Contínua, em %."""
-    taxa = pd.read_csv(caminho, index_col="trimestre").taxa_desocupacao
-    return dessazonalizar(taxa).rename(TAXA_DESEMPREGO)
+    """Taxa de desemprego dessazonalizada com a amostra inteira, em %."""
+    return dessazonalizar(carregar_taxa_bruta(caminho)).rename(TAXA_DESEMPREGO)
+
+
+def observaveis(crescimento: pd.DataFrame, taxa_bruta: pd.Series) -> pd.DataFrame:
+    """
+    As quatro séries das Contas Nacionais, a variação do desemprego (vazia
+    antes de 2012T2), a taxa dessazonalizada (vazia antes de 2012T1), ambas
+    com a amostra inteira, e a taxa sem ajuste, de onde `ate_a_origem` refaz
+    o ajuste só com o passado.
+    """
+    taxa = dessazonalizar(taxa_bruta.dropna()).rename(TAXA_DESEMPREGO)
+    return (crescimento.join(taxa.diff().rename(DESEMPREGO)).join(taxa)
+            .join(taxa_bruta.rename(TAXA_BRUTA)))
 
 
 def carregar_observaveis() -> pd.DataFrame:
+    return observaveis(carregar_crescimento(), carregar_taxa_bruta())
+
+
+def ate_a_origem(dados: pd.DataFrame, origem: int) -> pd.DataFrame:
     """
-    As quatro séries das Contas Nacionais, a variação do desemprego (vazia
-    antes de 2012T2) e, para os modelos que reproduzem o nível, a própria
-    taxa (vazia antes de 2012T1).
+    Os dados até a origem, com a taxa de desemprego e a variação dela
+    dessazonalizadas só com a PNAD até a origem. É o que um modelo pode ver
+    em `origem`.
     """
-    taxa = carregar_taxa_desemprego()
-    return carregar_crescimento().join(taxa.diff().rename(DESEMPREGO)).join(taxa)
+    amostra = dados.loc[:origem].copy()
+    if TAXA_BRUTA in amostra:
+        bruta = amostra[TAXA_BRUTA].dropna()
+        taxa = dessazonalizar(bruta) if len(bruta) >= 5 else pd.Series(np.nan, index=bruta.index)
+        amostra[TAXA_DESEMPREGO] = taxa.reindex(amostra.index)
+        amostra[DESEMPREGO] = taxa.diff().reindex(amostra.index)
+    return amostra
 
 
 def ano_de(trimestre: int) -> int:
@@ -212,7 +243,7 @@ def prever_na_origem(modelo, dados: pd.DataFrame, origem: int,
     como dado faltante.
     """
     variaveis = list(getattr(modelo, "variaveis", SERIES))
-    amostra = dados.loc[:origem]
+    amostra = ate_a_origem(dados, origem)
     if amostra.index[-1] != origem:
         raise ValueError(f"origem {origem} fora dos dados")
     if hasattr(modelo, "prever"):   # modelos simulados, como o ABM

@@ -98,6 +98,11 @@ CORES_ABM2 = {"Equilíbrio geral com busca, tendência trimestral": AZUL,
               **{f"ABM 2: {nome}": cor for nome, cor in zip(REGRAS_ABM.values(), _CORES_REGRAS)}}
 # Nomes antigos do ABM com leiloeiro em resultados/previsoes.csv.
 NOMES_ANTIGOS = {f"ABM: {nome}": f"ABM 1: {nome}" for nome in REGRAS_ABM.values()}
+# Ficam fora das previsões registradas: no ABM 2, essas duas regras levam o
+# lucro realizado do fundo quase direto às crenças e ao custo do capital, e
+# as previsões de consumo e FBCF oscilam demais para serem levadas a sério
+# (ver o README do ABM 2). Continuam na avaliação fora da amostra.
+SEM_REGISTRO = ("ABM 2: heurísticas", "ABM 2: atenção limitada")
 
 
 def somar_trimestres(trimestre: int, k: int) -> int:
@@ -220,8 +225,10 @@ def relatorio(previsoes: pd.DataFrame) -> None:
             print(tabela_horizontes(tabela, "rmse_relativo"))
             print(f"\nCRPS relativo ao AR(1), {nome}:")
             print(tabela_horizontes(tabela, "crps_relativo"))
-            print(f"\np-valor de Diebold-Mariano contra o AR(1), {nome}:")
-            print(tabela_horizontes(tabela[tabela.modelo != "AR(1)"], "p_valor"))
+            print(f"\np-valor contra o AR(1), {nome} (Diebold-Mariano; Clark-West para média e VAR(1)):")
+            print(tabela_horizontes(tabela[tabela.modelo != "AR(1)"], "p_teste"))
+            print(f"\no mesmo, com a correção de Holm entre os modelos, {nome}:")
+            print(tabela_horizontes(tabela[tabela.modelo != "AR(1)"], "p_holm"))
             print(f"\nCobertura do intervalo de 90%, {nome}:")
             print(tabela_horizontes(tabela, "cobertura_90"))
 
@@ -238,10 +245,11 @@ def relatorio(previsoes: pd.DataFrame) -> None:
                 print(f"\nRMSE relativo à média histórica, {nome}:")
                 print(tabela_horizontes(contra, "rmse_relativo"))
                 print(f"p-valor de Diebold-Mariano contra a média histórica, {nome}:")
-                print(tabela_horizontes(contra, "p_valor"))
+                print(tabela_horizontes(contra, "p_teste"))
 
     ultima = lista[-1]
-    registrada = previsoes[previsoes.origem == ultima].drop(columns="realizado").copy()
+    registrada = previsoes[(previsoes.origem == ultima) & ~previsoes.modelo.isin(SEM_REGISTRO)]
+    registrada = registrada.drop(columns="realizado").copy()
     registrada["alvo"] = [somar_trimestres(ultima, h) for h in registrada.h]
     lei = efeito_lei(protocolo.HORIZONTE, ultima)
     registrada["efeito_lei"] = [lei.loc[h, v] if m.startswith("Equilíbrio geral") and v in lei else 0.0

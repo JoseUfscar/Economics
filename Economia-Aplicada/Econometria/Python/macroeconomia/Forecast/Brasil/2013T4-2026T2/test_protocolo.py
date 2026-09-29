@@ -100,6 +100,32 @@ class TestSemOlharOFuturo(unittest.TestCase):
                 # O realizado, esse sim, vem do futuro.
                 self.assertFalse(np.allclose(original.realizado, mudado.realizado))
 
+    def test_pnad_bruta_alterada_depois_da_origem(self):
+        # Mudar a PNAD sem ajuste depois da origem muda a taxa dessazonalizada
+        # com a amostra inteira também antes dela, mas não o que os modelos veem.
+        origem = 201604
+        crescimento = protocolo.carregar_crescimento()
+        bruta = protocolo.carregar_taxa_bruta()
+        alterada = bruta.copy()
+        alterada.loc[alterada.index > origem] += np.tile([3.0, -2.0, 1.0, 0.5], 40)[:(alterada.index > origem).sum()]
+        dados, dados_alt = (protocolo.observaveis(crescimento, b) for b in (bruta, alterada))
+        cheia = dados.loc[:origem, protocolo.TAXA_DESEMPREGO]
+        self.assertFalse(np.allclose(cheia, dados_alt.loc[:origem, protocolo.TAXA_DESEMPREGO]))
+        visto = protocolo.ate_a_origem(dados, origem)
+        pd.testing.assert_frame_equal(visto, protocolo.ate_a_origem(dados_alt, origem))
+        np.testing.assert_allclose(visto[protocolo.TAXA_DESEMPREGO].dropna(),
+                                   protocolo.dessazonalizar(bruta.loc[:origem]))
+        _, anuais = protocolo.carregar_tudo()
+        colunas = ["variavel", "h", "previsto", "dp"]
+        # Uma instância nova para cada previsão: o modelo com busca guarda a
+        # estimativa anterior como ponto de partida.
+        for construir in (lambda: protocolo.ModeloReferencia("AR(1)", protocolo.referencias.ar1,
+                                                             protocolo.VARIAVEIS),
+                          lambda: protocolo.ModeloDSGEBusca(anuais, "trimestral")):
+            original = protocolo.prever_na_origem(construir(), dados, origem)
+            mudado = protocolo.prever_na_origem(construir(), dados_alt, origem)
+            pd.testing.assert_frame_equal(original[colunas], mudado[colunas])
+
     def test_realizado_e_o_crescimento_acumulado(self):
         crescimento, anuais = protocolo.carregar_tudo()
         modelo = protocolo.modelos_padrao(anuais)[0]
