@@ -3,16 +3,17 @@ A economia sem leiloeiro (descentralizada.py) contra o equilíbrio walrasiano
 com os mesmos fundamentos.
 
   - `longo_prazo`: 300 anos sem choques agregados, para três regras de
-    expectativas. O que emerge (desemprego, margem, salário real, capital,
-    tempo de procura, flutuações) é comparado com a referência walrasiana e
-    com a PNAD;
+    expectativas e quatro sementes cada. O resultado (desemprego, margem,
+    salário real, capital, tempo de procura, flutuações) é a média das
+    sementes, com o erro-padrão entre elas, e é comparado com a referência
+    walrasiana e com a PNAD;
   - `sensibilidade`: os mesmos números com parâmetros de comportamento
-    abaixo e acima dos da literatura.
+    abaixo e acima dos da literatura, 150 anos e quatro sementes.
 
 A Lei 15.270/2025 nesta economia está em
 Politicas/Lei-15270/abm2_sem_leiloeiro/lei_sem_leiloeiro.py.
 
-Rode a partir da pasta Econometria/ (cerca de 3 minutos com 4 núcleos; dá
+Rode a partir da pasta Econometria/ (cerca de 10 minutos com 4 núcleos; dá
 para rodar só uma parte, com `longo` ou `sensibilidade`):
 
     python Python/macroeconomia/Forecast/Brasil/2013T4-2026T2/abm2_sem_leiloeiro/experimentos_mercados.py
@@ -45,6 +46,7 @@ from experimentos import AZUL, TINTA_2, _estilo, _virgula  # noqa: E402
 PASTA = Path(__file__).resolve().parent
 N = 20_000
 ANOS = 300
+SEMENTES = (1, 2, 3, 4)
 REGRAS = {"aprendizado": X.Aprendizado, "heurísticas": X.Heuristicas,
           "atenção limitada": X.AtencaoLimitada}
 PROCURA_PNAD = ["procura_menos_de_1_mes", "procura_1_mes_a_1_ano", "procura_1_a_2_anos",
@@ -88,7 +90,12 @@ def ciclos(h: pd.DataFrame, descarte: int = 400) -> dict:
             "correlação vagas x desemprego": float(np.corrcoef(anual.vagas, anual.desemprego)[0, 1])}
 
 
-def resumo_longo_prazo(eco: DC.Economia, historias: dict, descarte: int = 400) -> pd.DataFrame:
+def resumo_longo_prazo(eco: DC.Economia, historias: dict, descarte: int = 400):
+    """
+    `historias` tem, para cada regra, a lista das simulações (uma por
+    semente). Devolve a média das sementes, com a referência walrasiana na
+    primeira linha, e o erro-padrão entre as sementes.
+    """
     est = eco.cal.est
     alpha = eco.cal.par.alpha
     pnad = carregar_pnad()[0].loc[201201:202504, PROCURA_PNAD].mean() / 100
@@ -101,19 +108,27 @@ def resumo_longo_prazo(eco: DC.Economia, historias: dict, descarte: int = 400) -
                "procura até 1 ano (%)": 100 * (pnad.iloc[0] + pnad.iloc[1]),
                "procura 1 a 2 anos (%)": 100 * pnad.iloc[2],
                "procura 2 anos ou mais (%)": 100 * pnad.iloc[3]}]
-    for regra, h in historias.items():
-        f = h.iloc[descarte:].mean()
-        linhas.append({"economia": f"sem leiloeiro, {regra}", "produto": f.y / est.y, "capital": f.K / est.K,
-                       "salário real": f.w / est.w, "juro líquido (%)": 100 * f.r,
-                       "desemprego (%)": 100 * f.desemprego, "margem (%)": 100 * f.margem_alvo,
-                       "participação do trabalho (%)": 100 * f.participacao_trabalho,
-                       "famílias racionadas (%)": 100 * f.racionadas,
-                       "ficaram sem comprar tudo (%)": 100 * f.sem_comprar_tudo,
-                       "procura até 1 ano (%)": 100 * f.procura_ate_1_ano,
-                       "procura 1 a 2 anos (%)": 100 * f.procura_1_a_2_anos,
-                       "procura 2 anos ou mais (%)": 100 * f.procura_2_anos_ou_mais,
-                       **ciclos(h, descarte)})
-    return pd.DataFrame(linhas)
+    erros = []
+    for regra, lista in historias.items():
+        por_semente = []
+        for h in lista:
+            f = h.iloc[descarte:].mean()
+            por_semente.append({
+                "produto": f.y / est.y, "capital": f.K / est.K,
+                "salário real": f.w / est.w, "juro líquido (%)": 100 * f.r,
+                "desemprego (%)": 100 * f.desemprego, "margem (%)": 100 * f.margem_alvo,
+                "participação do trabalho (%)": 100 * f.participacao_trabalho,
+                "famílias racionadas (%)": 100 * f.racionadas,
+                "ficaram sem comprar tudo (%)": 100 * f.sem_comprar_tudo,
+                "procura até 1 ano (%)": 100 * f.procura_ate_1_ano,
+                "procura 1 a 2 anos (%)": 100 * f.procura_1_a_2_anos,
+                "procura 2 anos ou mais (%)": 100 * f.procura_2_anos_ou_mais,
+                **ciclos(h, descarte)})
+        tabela = pd.DataFrame(por_semente)
+        nome = f"sem leiloeiro, {regra}"
+        linhas.append({"economia": nome, **tabela.mean().to_dict()})
+        erros.append({"economia": nome, **(tabela.std() / np.sqrt(len(tabela))).to_dict()})
+    return pd.DataFrame(linhas), pd.DataFrame(erros)
 
 
 # --- sensibilidade ------------------------------------------------------------------
@@ -148,12 +163,14 @@ def _sensibilidade(args):
             "famílias racionadas (%)": 100 * f.racionadas}
 
 
-def sensibilidade(anos: int = 150, sementes=(0, 1)) -> pd.DataFrame:
+def sensibilidade(anos: int = 150, sementes=(0, 1, 2, 3)) -> pd.DataFrame:
+    """Média das sementes e, nas colunas terminadas em "(ep)", o erro-padrão entre elas."""
     casos = [(nome, mudancas, anos, s) for nome, mudancas in SENSIBILIDADE.items() for s in sementes]
     with ProcessPoolExecutor() as executor:
         linhas = list(executor.map(_sensibilidade, casos))
-    return pd.DataFrame(linhas).groupby("variante", sort=False).mean(numeric_only=True).drop(
-        columns="semente").reset_index()
+    grupos = pd.DataFrame(linhas).drop(columns="semente").groupby("variante", sort=False)
+    erro = (grupos.std() / np.sqrt(len(sementes))).add_suffix(" (ep)")
+    return grupos.mean().join(erro).reset_index()
 
 
 # --- figuras -----------------------------------------------------------------------
@@ -193,15 +210,21 @@ def main(partes=("longo", "sensibilidade")) -> None:
     formato = {"display.width": 250, "display.max_columns": 30, "display.float_format": "{:.3f}".format}
     if "longo" in partes:
         with ProcessPoolExecutor() as executor:
-            historias = dict(zip(REGRAS, executor.map(_simular, [(eco, r, 4 * ANOS, 1) for r in REGRAS])))
-        resumo = resumo_longo_prazo(eco, historias)
+            casos = [(eco, r, 4 * ANOS, s) for r in REGRAS for s in SEMENTES]
+            simuladas = list(executor.map(_simular, casos))
+        historias = {r: [h for (_, regra, _, _), h in zip(casos, simuladas) if regra == r] for r in REGRAS}
+        resumo, erros = resumo_longo_prazo(eco, historias)
         resumo.to_csv(pasta_res / "mercados_longo_prazo.csv", index=False, float_format="%.6g")
-        anuais = {r: h.groupby(np.arange(len(h)) // 4).mean() for r, h in historias.items()}
+        erros.to_csv(pasta_res / "mercados_longo_prazo_erro_padrao.csv", index=False, float_format="%.6g")
+        # A história anual e a figura são as da primeira semente.
+        anuais = {r: h[0].groupby(np.arange(len(h[0])) // 4).mean() for r, h in historias.items()}
         pd.concat(anuais, names=["regra", "ano"]).to_csv(pasta_res / "mercados_historia.csv",
                                                           float_format="%.5g")
-        figura_longo_prazo(eco, historias["aprendizado"], pasta_fig / "mercados_longo_prazo.png")
+        figura_longo_prazo(eco, historias["aprendizado"][0], pasta_fig / "mercados_longo_prazo.png")
         with pd.option_context(*[v for par in formato.items() for v in par]):
             print(resumo.T.to_string())
+            print("\nErro-padrão entre as sementes:")
+            print(erros.T.to_string())
     if "sensibilidade" in partes:
         sens = sensibilidade()
         sens.to_csv(pasta_res / "mercados_sensibilidade.csv", index=False, float_format="%.6g")
