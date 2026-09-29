@@ -1,0 +1,7 @@
+# Versões exatas com que os resultados em resultados/ e figuras/ foram
+# gerados (Python 3.11). requirements.txt tem só os mínimos.
+numpy==2.4.6
+pandas==3.0.6
+scipy==1.17.1
+statsmodels==0.15.0
+matplotlib==3.11.2

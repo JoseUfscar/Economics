@@ -8,6 +8,10 @@ source .venv/bin/activate
 pip install -r Python/requirements.txt
 ```
 
+`requirements.txt` tem as versões mínimas. Para reproduzir os resultados dos
+modelos de macroeconomia até a última casa, use as versões exatas com que eles
+foram gerados, em `requirements-versoes.txt` (Python 3.11).
+
 ## Rodando os exemplos
 
 A partir da **pasta `Econometria/`** (os scripts leem `dados/...`):
@@ -30,7 +34,7 @@ baseados em agentes). Rode os comandos deles também a partir da pasta
 
 ## Bibliotecas
 
-`numpy`, `pandas`, `scipy` e `statsmodels` — cobrem OLS, séries temporais
+`numpy`, `pandas`, `scipy` e `statsmodels` cobrem OLS, séries temporais
 (ARIMA/SARIMAX), e a maioria dos modelos de microeconometria básica.
 `matplotlib` gera as figuras do modelo de equilíbrio geral. Para
 painéis mais robustos (efeitos aleatórios, IV em painel) considere adicionar

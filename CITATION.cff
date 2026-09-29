@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "Se usar este material, cite-o assim."
+title: "Economics: modelos econômicos quantitativos e econométricos"
+authors:
+  - family-names: Oliveira
+    given-names: José
+repository-code: "https://github.com/JoseUfscar/Economics"
+keywords:
+  - macroeconomia
+  - equilíbrio geral
+  - modelos baseados em agentes
+  - previsão
+  - tributação do capital
+  - Brasil

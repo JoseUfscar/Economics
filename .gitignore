@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# LaTeX (compilar gera estes arquivos ao lado do .tex)
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Sistema
+.DS_Store

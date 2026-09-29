@@ -1,0 +1,22 @@
+name: testes
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  macroeconomia:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Dependências
+        run: pip install -r Economia-Aplicada/Econometria/Python/requirements-versoes.txt
+      - name: Testes dos modelos de macroeconomia
+        working-directory: Economia-Aplicada/Econometria
+        env:
+          MPLBACKEND: Agg
+        run: python Python/macroeconomia/rodar_testes.py
