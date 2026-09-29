@@ -5,9 +5,10 @@ formas de devolver a receita de lei_com_leiloeiro.py, em várias sementes.
 
 Em cada semente, a economia parte da referência walrasiana e roda 100 anos
 sem reforma, o mesmo aquecimento da previsão, para chegar ao regime do
-próprio ABM (margens, estoques, capital e crenças). Daí se separa em três
+próprio ABM (margens, estoques, capital e crenças). Daí se separa em
 cópias com os mesmos números aleatórios: sem reforma, com devolução uniforme
-e com devolução por isenção.
+e com devolução por isenção. Uma quarta cópia, o placebo, também fica sem
+reforma, mas com outros sorteios a partir da separação.
 
 Só a receita do aumento da alíquota segue os pesos da devolução; o resto do
 orçamento, inclusive o que a base dos outros impostos perde com a reforma e
@@ -19,12 +20,19 @@ Aiyagari é resolvido também com esta regra (equilibrio_geral/experimentos_ha.p
 devolução "isenção, só a receita nova"), e o novo equilíbrio walrasiano de
 referência usa a mesma regra.
 
-A economia flutua sozinha e tem, de tempos em tempos, crises de desemprego;
-depois da separação, as cópias com e sem reforma passam por elas em datas
-diferentes. Uma semente só mistura o efeito da lei com o ciclo; a média de
-96 sementes separa os dois, com o erro-padrão que o resumo informa.
+A economia flutua sozinha, e depois da separação as cópias com e sem
+reforma seguem caminhos diferentes: cada família é demitida, contratada e
+racionada em datas diferentes. Uma semente só mistura o efeito da lei com
+esse ruído; a média de 96 sementes separa os dois, com o erro-padrão que o
+resumo informa. O ruído, porém, não some da média dos ganhos individuais:
+como o ganho de cada família é uma função convexa da razão entre os seus
+bem-estares, sorteios diferentes dão, em média, ganho positivo mesmo sem
+reforma nenhuma, e mais para quem tem a renda mais volátil. O placebo mede
+esse viés. O ganho utilitário de cada grupo, que soma o bem-estar das
+famílias antes de convertê-lo em consumo, quase não sofre dele e é a
+medida principal aqui.
 
-Rode a partir da pasta Econometria/ (cerca de 20 minutos com 4 núcleos):
+Rode a partir da pasta Econometria/ (cerca de 30 minutos com 4 núcleos):
 
     python Python/macroeconomia/Politicas/Lei-15270/abm2_sem_leiloeiro/lei_sem_leiloeiro.py
 """
@@ -48,7 +56,7 @@ import pandas as pd  # noqa: E402
 
 import descentralizada as DC  # noqa: E402
 import expectativas as X  # noqa: E402
-from experimentos import AZUL, LARANJA, TINTA, _estilo, _virgula  # noqa: E402
+from experimentos import AZUL, LARANJA, TINTA, TINTA_2, _estilo, _virgula  # noqa: E402
 from experimentos_mercados import N, economia_base  # noqa: E402
 from lei_com_leiloeiro import DEVOLUCOES, resumo_bem_estar  # noqa: E402
 
@@ -56,12 +64,15 @@ PASTA = Path(__file__).resolve().parent
 ANOS_LEI = 150
 AQUECIMENTO = 400        # trimestres sem reforma antes dela, como na previsão
 SEMENTES_LEI = range(96)
+PLACEBO = "placebo"
 
 
 def _economia_da_lei(args):
     """
     Uma semente: aquecimento sem reforma e, a partir do mesmo estado e dos
     mesmos números aleatórios, a economia sem reforma e com cada devolução.
+    A cópia chamada PLACEBO descarta um sorteio antes de começar: é a mesma
+    economia, com outros números aleatórios.
     """
     eco0, reformas, semente, trimestres, aquecimento, n_familias = args
     par = eco0.cal.par
@@ -74,6 +85,8 @@ def _economia_da_lei(args):
     saida = {}
     for nome, eco in (("sem reforma", eco0), *reformas.items()):
         rng.bit_generator.state = estado_rng
+        if nome == PLACEBO:
+            rng.random()
         estado = copy.deepcopy(inicio)
         tipo = estado.tipo
         bem_estar, peso, linhas = np.zeros(n_familias), 1.0, []
@@ -91,12 +104,13 @@ def lei(eco0: DC.Economia, aumento: float, sementes=SEMENTES_LEI, anos: int = AN
     reformas = {nome: replace(eco0, cal=DC.reformada(eco0.cal, aumento, pesos),
                               tau_k_base=eco0.cal.par.tau_k)
                 for nome, pesos in DEVOLUCOES.items()}
+    reformas[PLACEBO] = eco0
     casos = [(eco0, reformas, s, 4 * anos, aquecimento, n_familias) for s in sementes]
     with ProcessPoolExecutor() as executor:
         resultados = dict(executor.map(_economia_da_lei, casos))
     tabelas, caminhos = [], {}
     theta = eco0.cal.par.theta
-    for devolucao in DEVOLUCOES:
+    for devolucao in reformas:
         desvios = []
         for semente, saida in resultados.items():
             base, b0, tipo = saida["sem reforma"]
@@ -119,10 +133,11 @@ def lei(eco0: DC.Economia, aumento: float, sementes=SEMENTES_LEI, anos: int = AN
 def resumo_lei(tabela: pd.DataFrame) -> pd.DataFrame:
     """Média e erro-padrão entre as sementes, por devolução e grupo."""
     agrupado = tabela.groupby(["devolucao", "grupo"], sort=False)
-    media = agrupado[["ganho médio (%)", "capital_longo_prazo", "desemprego_longo_prazo",
-                      "capital_equilibrio"]].mean()
+    media = agrupado[["ganho utilitário (%)", "ganho médio (%)", "capital_longo_prazo",
+                      "desemprego_longo_prazo", "capital_equilibrio"]].mean()
     raiz = np.sqrt(agrupado.size())
-    return media.assign(**{"erro-padrão do ganho": agrupado["ganho médio (%)"].std() / raiz,
+    return media.assign(**{"erro-padrão do ganho utilitário": agrupado["ganho utilitário (%)"].std() / raiz,
+                           "erro-padrão do ganho médio": agrupado["ganho médio (%)"].std() / raiz,
                            "erro-padrão do capital": agrupado["capital_longo_prazo"].std() / raiz,
                            "erro-padrão do desemprego": agrupado["desemprego_longo_prazo"].std() / raiz}
                         ).reset_index()
@@ -133,15 +148,17 @@ def resumo_lei(tabela: pd.DataFrame) -> pd.DataFrame:
 def figura_lei(caminhos: dict, tabela: pd.DataFrame, destino: Path) -> None:
     _estilo()
     fig, eixos = plt.subplots(1, 2, figsize=(9.5, 4.2))
-    cores = {"uniforme": AZUL, "isenção": LARANJA}
+    cores = {"uniforme": AZUL, "isenção": LARANJA, PLACEBO: TINTA_2}
     for devolucao, caminho in caminhos.items():
         media = caminho.groupby(level="trimestre").mean()
         anual = media.groupby(np.arange(len(media)) // 4).mean()
         anos = np.arange(1, len(anual) + 1)
-        eixos[0].plot(anos, anual.K, color=cores[devolucao], label=f"devolução {devolucao}")
-        eixos[1].plot(anos, anual.desemprego, color=cores[devolucao], label=f"devolução {devolucao}")
-        equilibrio = tabela[tabela.devolucao == devolucao].capital_equilibrio.iloc[0]
-        eixos[0].axhline(equilibrio, color=cores[devolucao], linestyle="--", linewidth=0.9)
+        rotulo = devolucao if devolucao == PLACEBO else f"devolução {devolucao}"
+        eixos[0].plot(anos, anual.K, color=cores[devolucao], label=rotulo)
+        eixos[1].plot(anos, anual.desemprego, color=cores[devolucao], label=rotulo)
+        if devolucao != PLACEBO:
+            equilibrio = tabela[tabela.devolucao == devolucao].capital_equilibrio.iloc[0]
+            eixos[0].axhline(equilibrio, color=cores[devolucao], linestyle="--", linewidth=0.9)
     eixos[0].set(title="Capital", ylabel="% em relação a sem reforma", xlabel="anos")
     eixos[1].set(title="Desemprego", ylabel="p.p. em relação a sem reforma", xlabel="anos")
     eixos[1].axhline(0, color=TINTA, linewidth=0.8)

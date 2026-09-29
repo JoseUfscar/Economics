@@ -16,7 +16,7 @@ import caminhos  # noqa: E402,F401
 import descentralizada as DC  # noqa: E402
 import expectativas as X  # noqa: E402
 from experimentos_mercados import economia_base  # noqa: E402
-from lei_sem_leiloeiro import _economia_da_lei  # noqa: E402
+from lei_sem_leiloeiro import PLACEBO, _economia_da_lei  # noqa: E402
 
 N_TESTE, AQUECIMENTO_TESTE, TRIMESTRES_TESTE = 1500, 8, 12
 
@@ -47,6 +47,16 @@ class TestLeiSemLeiloeiro(unittest.TestCase):
         (h0, b0, tipo0), (h1, b1, tipo1) = saida["sem reforma"], saida["isenção"]
         pd.testing.assert_frame_equal(h0, h1)
         np.testing.assert_array_equal(b0, b1)
+        np.testing.assert_array_equal(tipo0, tipo1)
+
+    def test_placebo_muda_so_os_sorteios(self):
+        # O placebo é a mesma economia sem reforma, com outros números
+        # aleatórios depois da separação: parte do mesmo estado e se afasta.
+        _, saida = _economia_da_lei((self.eco, {PLACEBO: self.eco}, 7, TRIMESTRES_TESTE,
+                                     AQUECIMENTO_TESTE, N_TESTE))
+        (h0, _, tipo0), (h1, _, tipo1) = saida["sem reforma"], saida[PLACEBO]
+        self.assertEqual(h0.K.iloc[0], h1.K.iloc[0])
+        self.assertFalse(h0.equals(h1))
         np.testing.assert_array_equal(tipo0, tipo1)
 
 
