@@ -1,17 +1,20 @@
-# Dados anuais do Brasil
+# Dados do Brasil
 
-Séries reais usadas na calibração do modelo de equilíbrio geral
-(`Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/`). O arquivo `brasil_anual.csv` é
-gerado por `baixar_dados.py` e fica versionado, para que o projeto rode sem
-internet e com números reproduzíveis. Para atualizar:
+Esta pasta guarda as séries reais usadas na calibração e na avaliação dos
+modelos de macroeconomia. Os arquivos são gerados pelos scripts `baixar_*.py`
+e ficam versionados, para que os projetos rodem sem internet e com números
+reproduzíveis.
+
+## Dados anuais (`brasil_anual.csv`)
+
+As séries anuais alimentam a calibração do modelo de equilíbrio geral, em
+`Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/`, e são
+atualizadas pelo script abaixo. A última extração foi feita em setembro de
+2026, com a PWT até 2023 e as séries do Ipea e do IBGE até 2025.
 
 ```
 python3 dados/brasil/baixar_dados.py
 ```
-
-Última extração: setembro de 2026 (PWT até 2023; Ipea e IBGE até 2025).
-
-## Colunas
 
 | coluna | descrição | unidade | fonte (código) |
 |---|---|---|---|
@@ -33,8 +36,10 @@ python3 dados/brasil/baixar_dados.py
 
 ## PNAD Contínua (`pnad_trimestral.csv` e `pnad_anual.csv`)
 
-Gerados por `baixar_pnad.py` (API do SIDRA/IBGE), para calibrar o risco de
-renda do modelo de Aiyagari:
+Os dois arquivos vêm da API do SIDRA/IBGE, por `baixar_pnad.py`, e servem para
+calibrar o risco de renda das famílias heterogêneas e para medir o desemprego
+na avaliação de previsões. A série trimestral vai de 2012T1 a 2026T2 e a
+anual, de 2012 a 2025.
 
 ```
 python3 dados/brasil/baixar_pnad.py
@@ -43,16 +48,19 @@ python3 dados/brasil/baixar_pnad.py
 | arquivo | coluna | descrição | tabela SIDRA |
 |---|---|---|---|
 | trimestral | `taxa_desocupacao` | taxa de desocupação, 14 anos ou mais (%) | 4099 |
-| trimestral | `procura_*` | distribuição dos desocupados por tempo de procura de trabalho (%): menos de 1 mês, 1 mês a 1 ano, 1 a 2 anos, 2 anos ou mais | 1616 |
+| trimestral | `procura_*` | distribuição dos desocupados por tempo de procura de trabalho (%), em menos de 1 mês, 1 mês a 1 ano, 1 a 2 anos e 2 anos ou mais | 1616 |
 | anual | `massa_*` | distribuição da massa de rendimento habitual do trabalho por faixa de percentil dos ocupados (%) | 7543 |
 | anual | `gini_renda_domiciliar_pc` | índice de Gini do rendimento domiciliar per capita | 7435 |
 
-Série trimestral de 2012T1 a 2026T2; anual de 2012 a 2025.
-
 ## Contas Nacionais Trimestrais (`contas_trimestrais.csv`)
 
-Gerado por `baixar_trimestrais.py` (API do SIDRA/IBGE), para a avaliação de
-previsões fora da amostra (`Python/macroeconomia/Forecast/Brasil/2013T4-2026T2/`):
+O arquivo trimestral, gerado por `baixar_trimestrais.py` também a partir do
+SIDRA/IBGE, é a base da avaliação de previsões fora da amostra, em
+`Python/macroeconomia/Forecast/Brasil/2013T4-2026T2/`. Cada grupo de colunas
+traz o PIB a preços de mercado (`pib`), o consumo das famílias
+(`consumo_familias`), o consumo da administração pública (`consumo_governo`)
+e a formação bruta de capital fixo (`fbcf`), de 1996T1 a 2026T2, numa
+extração de setembro de 2026.
 
 ```
 python3 dados/brasil/baixar_trimestrais.py
@@ -63,21 +71,17 @@ python3 dados/brasil/baixar_trimestrais.py
 | `volume_*` | série encadeada do índice de volume com ajuste sazonal (média de 1995 = 100) | 1621 |
 | `nominal_*` | valores a preços correntes, R$ milhões | 1846 |
 
-Cada grupo tem PIB a preços de mercado (`pib`), consumo das famílias
-(`consumo_familias`), consumo da administração pública (`consumo_governo`) e
-formação bruta de capital fixo (`fbcf`). Série de 1996T1 a 2026T2, extraída
-em setembro de 2026.
-
 ## Observações
 
-- A Penn World Table é baixada pelas séries que o FRED republica, porque o
-  repositório oficial (Dataverse) bloqueia downloads automáticos. Os valores
-  são os mesmos da PWT 11.0.
-- Nas séries do IBGE, os anos anteriores ao Plano Real aparecem em reais
-  convertidos e por isso são minúsculos; a calibração usa só 2000 em diante.
-- O estoque de capital do Ipea é a referência para K/Y e depreciação, pois é
-  compatível com as Contas Nacionais do IBGE. O da PWT fica no arquivo para
-  comparação: ele inclui outra composição de ativos e gera K/Y bem maior.
+A Penn World Table é baixada pelas séries que o FRED republica, porque o
+repositório oficial (Dataverse) bloqueia downloads automáticos, mas os valores
+são os mesmos da PWT 11.0. Nas séries do IBGE, os anos anteriores ao Plano
+Real aparecem em reais convertidos e por isso são minúsculos, razão pela qual
+a calibração usa apenas os dados de 2000 em diante. O estoque de capital do
+Ipea é a referência para K/Y e para a depreciação, porque é compatível com as
+Contas Nacionais do IBGE, enquanto o da PWT fica no arquivo apenas para
+comparação, já que inclui outra composição de ativos e resulta num K/Y bem
+maior.
 
 ## Referências
 

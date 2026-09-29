@@ -1,8 +1,8 @@
 # Economia Aplicada
 
-Portfólio de modelagem em economia aplicada, com projetos acadêmicos
-organizados por pasta. Cada pasta é um projeto independente, com README
-próprio; os comandos de cada uma rodam a partir dela.
+Portfólio de modelagem em economia aplicada com projetos acadêmicos
+organizados por pasta, em que cada pasta é um projeto independente, com
+README próprio e comandos que rodam a partir dela.
 
 | Pasta | Conteúdo |
 |---|---|

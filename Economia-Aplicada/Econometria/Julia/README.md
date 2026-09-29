@@ -1,13 +1,14 @@
 # Julia
 
-Os exemplos usam só a biblioteca padrão do Julia (`LinearAlgebra`,
-`DelimitedFiles`), então não é preciso `Pkg.instantiate()` nem internet para
-rodá-los — funcionam com qualquer instalação padrão do Julia (testado na
+Os exemplos usam apenas a biblioteca padrão do Julia (`LinearAlgebra` e
+`DelimitedFiles`), de modo que não é preciso rodar `Pkg.instantiate()` nem ter
+internet, e eles funcionam em qualquer instalação padrão (testado na versão
 1.10).
 
 ## Rodando os exemplos
 
-A partir da **pasta `Econometria/`** (os scripts leem `dados/...`):
+Os comandos devem ser executados a partir da pasta `Econometria/`, porque os
+scripts leem os arquivos em `dados/...`.
 
 ```
 julia Julia/macroeconometria/ar1.jl
@@ -19,11 +20,12 @@ julia Julia/macroeconomia/equilibrio_geral/ramsey.jl
 
 ### Modelo de equilíbrio geral (`macroeconomia/equilibrio_geral/`)
 
-Versão em Julia do [modelo de Ramsey com governo](../Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/README.md).
-Refaz a calibração para o Brasil a partir de `dados/brasil/brasil_anual.csv` e
-resolve a transição por *reverse shooting* (Runge-Kutta de 4ª ordem para trás
-no tempo, a partir da direção estável). O Python usa outro algoritmo (problema
-de contorno), e `test_ramsey.jl` confere que os dois concordam até a 6ª casa:
+Esta é a versão em Julia do [modelo de Ramsey com governo](../Python/macroeconomia/Politicas/Lei-15270/equilibrio_geral/README.md),
+que refaz a calibração para o Brasil a partir de `dados/brasil/brasil_anual.csv`
+e resolve a transição por *reverse shooting*, integrando por Runge-Kutta de
+quarta ordem para trás no tempo a partir da direção estável. Como o Python
+usa outro algoritmo, baseado num problema de contorno, `test_ramsey.jl`
+confere que os dois concordam até a sexta casa decimal.
 
 ```
 julia Julia/macroeconomia/equilibrio_geral/test_ramsey.jl
@@ -31,12 +33,11 @@ julia Julia/macroeconomia/equilibrio_geral/test_ramsey.jl
 
 ## Adicionando pacotes
 
-Para modelos mais avançados (`GLM.jl`, `DataFrames.jl`, `ARCHModels.jl`,
-`FixedEffectModels.jl` etc.), ative o ambiente desta pasta e adicione:
+Modelos mais avançados, que usem `GLM.jl`, `DataFrames.jl`, `ARCHModels.jl`
+ou `FixedEffectModels.jl`, pedem que o ambiente desta pasta seja ativado e os
+pacotes adicionados, o que gera um `Manifest.toml`, ignorado pelo git, com as
+versões travadas localmente.
 
 ```
 julia --project=Julia -e 'using Pkg; Pkg.add(["DataFrames", "GLM"])'
 ```
-
-Isso vai gerar um `Manifest.toml` (ignorado pelo git) travando as versões
-localmente.

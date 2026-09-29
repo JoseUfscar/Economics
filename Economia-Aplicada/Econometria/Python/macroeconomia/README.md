@@ -1,6 +1,7 @@
 # Macroeconomia
 
-Modelos macroeconômicos calibrados para o Brasil, em duas frentes:
+Modelos macroeconômicos calibrados para o Brasil, organizados em duas frentes
+que compartilham boa parte do código.
 
 ```
 macroeconomia/
@@ -21,29 +22,30 @@ macroeconomia/
 └── rodar_testes.py                 roda os testes de todas as pastas
 ```
 
-- **[Lei 15.270/2025](Politicas/Lei-15270/README.md):** quanto a economia
-  perde com um aumento da tributação da renda do capital do tamanho da lei,
-  quem ganha e quem perde, e se as conclusões valem quando as famílias não
-  são plenamente racionais e quando os preços não vêm de um equilíbrio.
-- **[Previsão fora da amostra](Forecast/Brasil/2013T4-2026T2/README.md):**
-  os modelos de equilíbrio geral e os ABMs contra modelos estatísticos,
-  prevendo PIB, consumo, FBCF, consumo do governo e desemprego de 1 a 8
-  trimestres à frente, com o que se sabia em cada data.
+A pasta da [Lei 15.270/2025](Politicas/Lei-15270/README.md) investiga quanto a
+economia perde com um aumento da tributação da renda do capital do tamanho
+previsto na lei, quem ganha e quem perde com ele e se essas conclusões
+continuam valendo quando as famílias não são plenamente racionais ou quando
+os preços deixam de vir de um equilíbrio. A pasta de
+[previsão fora da amostra](Forecast/Brasil/2013T4-2026T2/README.md) coloca os
+modelos de equilíbrio geral e os ABMs contra modelos estatísticos na previsão
+do PIB, do consumo, da FBCF, do consumo do governo e do desemprego, de 1 a 8
+trimestres à frente, sempre com o que se sabia em cada data.
 
-Os modelos se usam uns aos outros: os de previsão partem da calibração do
-equilíbrio geral da pasta da lei, e os experimentos da lei nos ABMs usam o
-código dos ABMs da pasta de previsão. Cada script põe as pastas no caminho
-de importação com `caminhos.py`, então todos rodam de qualquer lugar.
+As duas frentes dependem uma da outra, já que os modelos de previsão partem
+da calibração do equilíbrio geral guardado na pasta da lei e os experimentos
+da lei nos ABMs usam o código dos ABMs guardado na pasta de previsão. Para
+que tudo rode de qualquer lugar, cada script registra as pastas no caminho de
+importação por meio de `caminhos.py`.
 
 ## Como rodar
 
-Da pasta `Econometria/`, com as dependências de `Python/requirements.txt`:
+Os comandos rodam a partir da pasta `Econometria/`, com as dependências de
+`Python/requirements.txt`, e os de cada modelo estão no README da pasta
+correspondente. Os dados ficam em [`dados/brasil/`](../../dados/brasil/README.md),
+junto com os scripts que os baixam.
 
 ```bash
 python Python/macroeconomia/rodar_testes.py                  # todos os testes (cerca de 10 minutos)
 python Python/macroeconomia/rodar_testes.py dsge_busca       # só as pastas com esse nome
 ```
-
-Os comandos de cada modelo estão no README de cada pasta. Os dados ficam em
-[`dados/brasil/`](../../dados/brasil/README.md), com os scripts que os
-baixam.
