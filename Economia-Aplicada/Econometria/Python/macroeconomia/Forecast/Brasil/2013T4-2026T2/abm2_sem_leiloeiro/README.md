@@ -1,87 +1,79 @@
-# ABM 2: sem leiloeiro
+# ABM 2 sem leiloeiro
 
-O ABM com leiloeiro ([ABM 1](../abm1_com_leiloeiro/README.md)) sem o
-leiloeiro: 200 firmas que fixam preços e salários, um mercado de trabalho
-com busca e um mercado de bens em que cada família compra de poucos
-fornecedores. As famílias, a calibração e as regras de expectativas são as
-mesmas. O desemprego, a margem das firmas, o salário real e o retorno do
-capital saem das decisões dos agentes, e não de um equilíbrio.
-
-Serve à previsão fora da amostra desta pasta ([`../README.md`](../README.md)),
-em que o par dele no equilíbrio geral é o [modelo com margem e
-busca](../dsge_busca/README.md), e à [Lei 15.270](../../../../Politicas/Lei-15270/README.md#no-abm-sem-leiloeiro).
+Este modelo é o [ABM 1](../abm1_com_leiloeiro/README.md) sem o leiloeiro, com
+200 firmas que fixam preços e salários, um mercado de trabalho com busca e um
+mercado de bens em que cada família compra de poucos fornecedores. As
+famílias, a calibração e as regras de expectativas continuam as mesmas, mas o
+desemprego, a margem das firmas, o salário real e o retorno do capital passam
+a sair das decisões dos agentes, e não de um equilíbrio. O modelo serve à
+previsão fora da amostra desta pasta ([`../README.md`](../README.md)), em que
+seu par no equilíbrio geral é o [modelo com margem e
+busca](../dsge_busca/README.md), e à análise da [Lei
+15.270](../../../../Politicas/Lei-15270/README.md#no-abm-sem-leiloeiro).
 
 ## A economia
 
-No [ABM 1](../abm1_com_leiloeiro/README.md), os preços vêm de um leiloeiro
-walrasiano. Em `descentralizada.py` ele sai, e cada mercado passa a funcionar
-por conta dos agentes:
+No [ABM 1](../abm1_com_leiloeiro/README.md) os preços vêm de um leiloeiro
+walrasiano, que em `descentralizada.py` deixa de existir, de modo que cada
+mercado passa a funcionar por conta dos agentes, como resume a tabela.
 
 | Mercado | Quem decide | Como |
 |---|---|---|
-| Trabalho | 200 firmas heterogêneas em produtividade | cada firma abre vagas quando quer mais gente e demite quando quer menos; o desempregado se candidata a firmas com vagas, atraído pelo salário; o desemprego é o que sobra |
-| Salários | as firmas | quem não preenche a maior parte das vagas oferece mais; quem passa dois anos sem dificuldade oferece menos (Lengnick, 2013); o salário revisto parte do salário médio do mercado: quem sobe paga pelo menos a média, quem corta, no máximo a média |
-| Bens | as famílias, com 3 fornecedores cada | compram do mais barato para o mais caro; a firma sem estoque raciona; quem é racionado procura outra firma, e de vez em quando troca de fornecedor |
-| Preços | as firmas | margem sobre o custo unitário, revista com probabilidade 0,75 por trimestre (a frequência de reajustes no Brasil, Gouvea, 2007); a margem sobe quando falta estoque e desce quando sobra |
-| Produção e capital | as firmas | quadro ajustado aos poucos pelo estoque; investimento que repõe a depreciação e o crescimento de tendência e fecha 3% por trimestre da distância até o capital de custo mínimo, com o custo do capital dado pelo retorno que as famílias esperam |
-| Riqueza | um fundo, dono das firmas | o retorno das famílias é o lucro realizado, não o produto marginal |
+| Trabalho | 200 firmas heterogêneas em produtividade | cada firma abre vagas quando quer mais gente e demite quando quer menos, o desempregado se candidata às firmas com vagas atraído pelo salário e o desemprego é o que sobra |
+| Salários | as firmas | quem não preenche a maior parte das vagas oferece mais e quem passa dois anos sem dificuldade oferece menos (Lengnick, 2013), com o salário revisto partindo da média do mercado, de modo que quem sobe paga pelo menos a média e quem corta paga no máximo a média |
+| Bens | as famílias, com 3 fornecedores cada | compram do mais barato para o mais caro, a firma sem estoque raciona e quem é racionado procura outra firma, trocando de fornecedor de vez em quando |
+| Preços | as firmas | margem sobre o custo unitário, revista com probabilidade 0,75 por trimestre, que é a frequência de reajustes no Brasil (Gouvea, 2007), e que sobe quando falta estoque e desce quando sobra |
+| Produção e capital | as firmas | quadro ajustado aos poucos pelo estoque e investimento que repõe a depreciação e o crescimento de tendência e fecha 3% por trimestre da distância até o capital de custo mínimo, com o custo do capital dado pelo retorno que as famílias esperam |
+| Riqueza | um fundo, dono das firmas | o retorno das famílias é o lucro realizado, e não o produto marginal |
 
-As famílias são as mesmas, com as mesmas regras de expectativas. O
-desempregado recebe do governo a mesma fração da renda do seu tipo que no
-Aiyagari, mas não produz, e os fluxos de emprego vêm da mesma cadeia
-trimestral da PNAD: se sobrarem vagas, o emprego segue exatamente essa
-cadeia; se faltarem, o desemprego sobe. A referência é o equilíbrio
-walrasiano com esses fundamentos (os desempregados fora da produção reduzem
-o capital em 4%, mas o juro e o salário são os mesmos).
+O desempregado recebe do governo a mesma fração da renda do seu tipo que no
+modelo de Aiyagari, mas não produz, e os fluxos de emprego vêm da mesma
+cadeia trimestral da PNAD, que o emprego segue exatamente quando sobram vagas
+e da qual se afasta, com mais desemprego, quando elas faltam. A referência é
+o equilíbrio walrasiano com esses mesmos fundamentos, em que os desempregados
+fora da produção reduzem o capital em 4% sem alterar o juro nem o salário. A
+contabilidade fecha a cada trimestre, pois a riqueza das famílias mais o
+saldo do governo é igual ao capital mais o valor dos estoques e o produto é
+igual ao consumo mais o investimento, o gasto do governo e a variação dos
+estoques. As regras das firmas vêm da literatura de ABM macro (Lengnick,
+2013; Delli Gatti et al., 2011), convertidas para trimestres.
 
-A contabilidade fecha a cada trimestre: a riqueza das famílias mais o saldo
-do governo é o capital mais o valor dos estoques, e o produto é consumo mais
-investimento mais gasto do governo mais a variação dos estoques. As regras
-das firmas vêm da literatura de ABM macro (Lengnick, 2013; Delli Gatti et
-al., 2011), convertidas para trimestres.
+Chegar a uma economia estável deu trabalho, e o caminho até ela diz algo
+sobre os mecanismos em jogo, porque as primeiras versões explodiram ou
+colapsaram e cada falha apontou um deles. A regra de Lengnick sobe o salário
+sempre que falta gente, e com busca sempre falta alguém, de modo que, com
+margem fixa, o salário real crescia sem limite, já que o preço repassava só a
+parte do trabalho no custo. Firmas que aprendiam a demanda pelas vendas não
+percebiam a demanda que deixavam de atender e ficavam presas num racionamento
+permanente. Quando o investimento comprava antes das famílias, o
+racionamento virava poupança forçada, que virava mais capital, derrubava o
+juro e aumentava a demanda, sem fim. E firmas que ajustavam o quadro de uma
+vez levavam a economia ao colapso, com desemprego de 100%. A versão final
+ajusta o quadro aos poucos, deixa a margem subir quando falta produto, dá
+prioridade às famílias no mercado de bens e mede a demanda pelas vendas
+somadas ao que ficou sem atender.
 
-**Chegar a uma economia estável deu trabalho, e o caminho diz algo.** As
-primeiras versões explodiram ou colapsaram, e cada falha apontou um
-mecanismo:
-
-- a regra de Lengnick para salários sobe o salário sempre que falta gente,
-  e com busca sempre falta alguém: com margem fixa, o salário real cresce
-  sem limite, porque o preço repassa só a parte do trabalho no custo;
-- firmas que aprendem a demanda pelas vendas não percebem a demanda que não
-  conseguiram atender e ficam presas num racionamento permanente;
-- quando o investimento compra antes das famílias, o racionamento vira
-  poupança forçada, que vira mais capital, que derruba o juro e aumenta a
-  demanda, sem fim;
-- firmas que ajustam o quadro de uma vez fazem a economia colapsar para
-  desemprego de 100%.
-
-A versão final ajusta o quadro aos poucos, deixa a margem subir quando falta
-produto, dá prioridade às famílias no mercado de bens e mede a demanda pelas
-vendas mais o que ficou sem atender.
-
-Duas correções vieram depois, ao preparar o ABM 2 para a previsão:
-
-- **Salários ancorados na média.** Na regra de Lengnick, cada firma sobe ou
-  corta o próprio salário, e o salário de cada uma vira um passeio
-  aleatório: a dispersão entre firmas passava de 8% e ainda subia depois de
-  300 anos. Agora o salário revisto parte da média do mercado, e a dispersão
-  se estabiliza em cerca de 5%.
-- **Investimento com reposição da tendência.** A firma repunha só a
-  depreciação, então, com crescimento, o capital ficava abaixo do alvo numa
-  proporção que dependia da velocidade de ajuste (6% com os 10% por
-  trimestre de antes). Agora ela repõe também o crescimento de tendência, e
-  o capital de longo prazo não depende da velocidade. A velocidade, 3% por
-  trimestre, é o único parâmetro do ABM 2 calibrado com dados: é a que faz o
-  desvio-padrão do crescimento trimestral da FBCF, na história de 1996 a 2013
-  guiada pelos dados, ficar em 3,6 p.p., contra 3,5 p.p. nas Contas
-  Nacionais. Com 10% por trimestre, ficava em 12 p.p., e o investimento
-  previsto oscilava 40% em dois anos. O período de calibração termina antes
-  da primeira origem da avaliação de previsões.
+Duas correções vieram depois, na preparação do ABM 2 para a previsão. A
+primeira ancora os salários na média do mercado. Na regra original de
+Lengnick cada firma sobe ou corta o próprio salário, que vira um passeio
+aleatório, e a dispersão entre firmas passava de 8% e ainda subia depois de
+300 anos, ao passo que, partindo da média, ela se estabiliza em cerca de 5%.
+A segunda faz o investimento repor também o crescimento de tendência. Como a
+firma repunha só a depreciação, o capital ficava abaixo do alvo numa
+proporção que dependia da velocidade de ajuste, 6% com os 10% por trimestre
+usados antes, e com a reposição da tendência o capital de longo prazo deixa
+de depender da velocidade. Essa velocidade, de 3% por trimestre, é o único
+parâmetro do ABM 2 calibrado com dados, escolhido para que o desvio-padrão do
+crescimento trimestral da FBCF na história de 1996 a 2013 guiada pelos dados
+fique em 3,6 p.p., contra 3,5 p.p. nas Contas Nacionais. Com 10% por
+trimestre esse desvio chegava a 12 p.p. e o investimento previsto oscilava
+40% em dois anos. O período de calibração termina antes da primeira origem
+da avaliação de previsões.
 
 ## O que emerge
 
-300 anos sem choques agregados, com 20 mil famílias (médias depois dos 100
-primeiros anos, `resultados/mercados_longo_prazo.csv`):
+A tabela traz as médias de 300 anos sem choques agregados, com 20 mil
+famílias, descartados os 100 primeiros anos (`resultados/mercados_longo_prazo.csv`).
 
 | | Walrasiano / PNAD | Aprendizado | Heurísticas | Atenção limitada |
 |---|---|---|---|---|
@@ -99,35 +91,36 @@ primeiros anos, `resultados/mercados_longo_prazo.csv`):
 
 ![Produto, desemprego e margem sem leiloeiro](figuras/mercados_longo_prazo.png)
 
-1. **O desemprego emerge perto do da PNAD.** Sem ninguém impor, fica em 10%,
-   contra 9,7% nos dados, e a distribuição do tempo de procura bate com a da
-   PNAD (tabela 1616 do IBGE). Parte disso vem da calibração, porque a busca
-   reproduz a cadeia da PNAD quando sobram vagas; o que se acrescenta, cerca
-   de 0,3 p.p., vem das demissões e das vagas que ficam abertas.
-2. **O poder de mercado emerge.** As firmas cobram margens de 10% sobre o
-   custo, porque as famílias comparam só uns poucos fornecedores e
-   descobrem firmas mais baratas devagar. O salário real fica 10% a 12%
-   abaixo do walrasiano, a participação do trabalho cai de 55% para 51%, e o
-   capital, que as firmas dimensionam pelo custo, 13% a 15% abaixo. O
-   produto cai menos (3% a 5%) porque a produção migra para as firmas mais
-   produtivas. É a distorção clássica do poder de mercado, aqui sem ninguém
-   tê-la posto no modelo.
-3. **O juro fica no lugar.** O retorno do fundo, que é o lucro realizado,
-   fica a 0,3–0,5 p.p. do juro walrasiano: a poupança das famílias se ajusta
-   para que o capital renda o que elas exigem.
-4. **Surgem ciclos sem choques.** Sem nenhum choque agregado, o produto oscila
-   em ondas longas, de −12% a +7% em relação à média ao longo de décadas, e
-   o crescimento anual tem desvio de 1,3 a 1,4 p.p., metade dos
-   2,7 p.p. do PIB brasileiro desde 1997. Esses ciclos vêm do capital, das
-   margens e da produtividade das firmas, não do mercado de trabalho: o
-   desemprego quase não se mexe (desvio de 0,2 p.p., contra 2,9 p.p. na
-   PNAD), e não há lei de Okun nem curva de Beveridge. O ABM
-   descentralizado ainda não gera ciclos de desemprego como os brasileiros.
+Sem que ninguém o imponha, o desemprego fica em 10%, perto dos 9,7% da PNAD,
+e a distribuição do tempo de procura coincide com a da tabela 1616 do IBGE.
+Parte disso vem da calibração, porque a busca reproduz a cadeia da PNAD
+quando sobram vagas, e o que se acrescenta, cerca de 0,3 p.p., vem das
+demissões e das vagas que ficam abertas.
+
+Também o poder de mercado emerge, com margens de 10% sobre o custo, porque as
+famílias comparam poucos fornecedores e descobrem devagar as firmas mais
+baratas. O salário real fica 10% a 12% abaixo do walrasiano, a participação
+do trabalho cai de 55% para 51% e o capital, que as firmas dimensionam pelo
+custo, fica 13% a 15% abaixo, enquanto o produto cai menos, de 3% a 5%,
+porque a produção migra para as firmas mais produtivas. É a distorção
+clássica do poder de mercado, aqui sem que ninguém a tenha posto no modelo.
+O juro, por sua vez, fica no lugar, já que o retorno do fundo, que é o lucro
+realizado, fica a 0,3–0,5 p.p. do juro walrasiano, com a poupança das
+famílias se ajustando até que o capital renda o que elas exigem.
+
+Mesmo sem nenhum choque agregado surgem ciclos, e o produto oscila em ondas
+longas, de −12% a +7% em relação à média ao longo de décadas, com um desvio
+do crescimento anual de 1,3 a 1,4 p.p., metade dos 2,7 p.p. do PIB brasileiro
+desde 1997. Esses ciclos vêm do capital, das margens e da produtividade das
+firmas, e não do mercado de trabalho, pois o desemprego quase não se mexe,
+com desvio de 0,2 p.p. contra 2,9 p.p. na PNAD, e não aparecem nem a lei de
+Okun nem a curva de Beveridge. O ABM descentralizado ainda não gera ciclos de
+desemprego como os brasileiros.
 
 ### Sensibilidade
 
-Aprendizado, média de duas sementes nos últimos 100 de
-150 anos, `resultados/mercados_sensibilidade.csv`):
+A tabela usa a regra de aprendizado, com a média de duas sementes nos últimos
+100 de 150 anos (`resultados/mercados_sensibilidade.csv`).
 
 | Variante | Produto | Capital | Salário real | Desemprego | Margem |
 |---|---|---|---|---|---|
@@ -140,50 +133,44 @@ Aprendizado, média de duas sementes nos últimos 100 de
 | 100 ou 400 firmas | 0,94–0,95 | 0,83–0,84 | 0,88–0,89 | 9,8–10,2% | 10,4–10,7% |
 | Depreciação do estoque de 2% ou 10% | 0,94–0,98 | 0,82–0,87 | 0,87–0,91 | 10,0–10,1% | 9,6–11,4% |
 
-O desemprego e o juro quase não dependem das regras. A margem depende de
-uma só: fica em cerca de dois terços do teto que as firmas se permitem.
-Então o modelo mostra que o poder de mercado emerge e para que lado ele
-empurra salários e capital, mas não fixa o tamanho dele; para isso seria
-preciso calibrar o teto com margens medidas nos dados.
+O desemprego e o juro quase não dependem das regras, e a margem depende de
+uma só, ficando em cerca de dois terços do teto que as firmas se permitem. O
+modelo mostra, portanto, que o poder de mercado emerge e para que lado ele
+empurra salários e capital, mas não fixa o seu tamanho, que exigiria
+calibrar o teto com margens medidas nos dados.
 
 ## Verificação
 
-- **Sem leiloeiro:** a riqueza das famílias mais o saldo do governo é o
-  capital mais os estoques, e o produto é a soma das demandas mais a variação
-  dos estoques, a cada trimestre; com vagas sobrando, a busca reproduz a
-  cadeia de emprego da PNAD; nenhuma firma vende mais do que tem; e, sem
-  receita nova, mudar a forma de devolução não muda nada (só a receita da
-  reforma segue os pesos da devolução).
-- **História sem leiloeiro:** o ABM 2 reproduz o PIB e o gasto observados com
-  erro de $10^{-14}$ e a taxa de desemprego da PNAD com erro médio de 0,05
-  p.p.; achar a separação que dá o desemprego observado não altera os
-  números aleatórios do resto do trimestre.
-
-São 21 testes (`test_*.py`).
+Os 21 testes (`test_*.py`) conferem, a cada trimestre, que a riqueza das
+famílias mais o saldo do governo é igual ao capital mais os estoques e que o
+produto é a soma das demandas mais a variação dos estoques, que a busca
+reproduz a cadeia de emprego da PNAD quando sobram vagas, que nenhuma firma
+vende mais do que tem e que, sem receita nova, mudar a forma de devolução
+não muda nada, já que só a receita da reforma segue os pesos da devolução.
+Na história guiada pelos dados, o ABM 2 reproduz o PIB e o gasto observados
+com erro de $10^{-14}$ e a taxa de desemprego da PNAD com erro médio de
+0,05 p.p., e a busca da separação que gera o desemprego observado não altera
+os números aleatórios do resto do trimestre.
 
 ## Previsão fora da amostra
 
-Em cada origem, com o que se sabia naquela data (`previsao_descentralizada.py`):
+Em cada origem, `previsao_descentralizada.py` usa apenas o que se sabia
+naquela data. O modelo parte da mesma calibração do ABM 1, com dados anuais
+até dois anos antes, PNAD até a origem e tendência dada pelo PIB trimestral
+até a origem, agora com os desempregados fora da produção, e passa por 100
+anos de aquecimento sem choques, a partir da referência walrasiana, para que
+margens, estoques, capital e crenças cheguem ao regime do próprio ABM, com o
+mesmo descarte da análise de longo prazo. Em seguida percorre a história de
+1996 até a origem, reproduzindo o PIB pelo crescimento da produtividade, o
+gasto do governo e, desde 2012, a taxa de desemprego da PNAD pela
+probabilidade de separação de cada trimestre, estima um AR(1) para os três
+choques, com resíduos correlacionados, e faz 200 simulações de T+1 a T+8 com
+choques antitéticos. Com isso prevê o crescimento acumulado do PIB, do
+consumo, da FBCF e do consumo do governo e a variação do desemprego.
 
-1. a mesma calibração do ABM 1 (dados anuais até dois anos antes, PNAD até a
-   origem, tendência pelo PIB trimestral até a origem), com os
-   desempregados fora da produção;
-2. 100 anos de aquecimento sem choques, a partir da referência walrasiana,
-   para que margens, estoques, capital e crenças cheguem ao regime do próprio
-   ABM (o mesmo descarte da análise de longo prazo);
-3. a história de 1996 até a origem, reproduzindo o PIB (pelo crescimento da
-   produtividade), o gasto do governo e, desde 2012, a taxa de desemprego da
-   PNAD (pela probabilidade de separação do trimestre);
-4. AR(1) dos três choques, com resíduos correlacionados;
-5. 200 simulações de T+1 a T+8, com choques antitéticos.
-
-Prevê o crescimento acumulado de PIB, consumo, FBCF e consumo do governo e
-a variação do desemprego. O par dele no equilíbrio geral é o
-[modelo com margem e busca](../dsge_busca/README.md).
-
-RMSE relativo ao AR(1) em 8 trimestres, com a amostra toda e sem as janelas
-da pandemia (em negrito, diferença significativa a 5% pelo teste de
-Diebold-Mariano):
+A tabela mostra o RMSE relativo ao AR(1) em 8 trimestres, com a amostra toda
+e sem as janelas da pandemia, com as diferenças significativas a 5% pelo
+teste de Diebold-Mariano em negrito.
 
 | Modelo | PIB | PIB sem pandemia | Consumo | Consumo sem pandemia | FBCF | FBCF sem pandemia | Desemprego | Desemprego sem pandemia |
 |---|---|---|---|---|---|---|---|---|
@@ -196,29 +183,29 @@ Diebold-Mariano):
 
 ![ABM 2 e equilíbrio geral com busca](../figuras/rmse_abm2_sem_pandemia.png)
 
-1. **Com crenças fixas, aprendizado e informação rígida, o ABM 2 fica no
-   nível do par.** Erra o mesmo no PIB, um pouco menos no consumo (com
-   informação rígida, o melhor de todos os modelos para o consumo com a
-   amostra toda) e menos na FBCF sem a pandemia.
-2. **No desemprego, ele e o par batem o AR(1) em um e dois anos.** Com
-   aprendizado, o ABM 2 erra 24% menos que o AR(1) em 8 trimestres (14% sem
-   a pandemia), o melhor resultado para o desemprego. Os dois modelos
-   trazem o desemprego de volta à média da PNAD; as referências extrapolam
-   a tendência recente. Em um trimestre, o AR(1) é melhor.
-3. **Com heurísticas e atenção limitada, o ABM 2 é instável.** O retorno do
-   capital é o lucro realizado do fundo, que oscila, e essas regras o levam
-   quase direto às crenças; o custo do capital das firmas e o consumo
-   oscilam junto, e os erros na FBCF ficam 45% a 80% maiores que os do
-   AR(1). Com heurísticas, as famílias ainda trocam de regra em bloco. No
-   ABM 1, em que o retorno é o produto marginal, as mesmas regras são as
-   melhores para a FBCF.
+Com crenças fixas, aprendizado e informação rígida, o ABM 2 fica no nível do
+seu par no equilíbrio geral, errando o mesmo no PIB, um pouco menos no
+consumo e menos na FBCF sem a pandemia, e com informação rígida chega a ser o
+melhor de todos os modelos para o consumo na amostra toda. No desemprego, ele
+e o par batem o AR(1) em um e dois anos, e com aprendizado o ABM 2 erra 24%
+menos que o AR(1) em 8 trimestres, ou 14% menos sem a pandemia, o melhor
+resultado para essa variável. Os dois modelos trazem o desemprego de volta à
+média da PNAD, enquanto as referências extrapolam a tendência recente, o que
+explica também por que o AR(1) é melhor em um trimestre.
 
-As tabelas completas e as previsões registradas para 2026-2028 estão no
-[README da previsão](../README.md).
+Com heurísticas e atenção limitada o ABM 2 fica instável. O retorno do
+capital é o lucro realizado do fundo, que oscila, e essas regras o levam
+quase direto às crenças, de modo que o custo do capital das firmas e o
+consumo oscilam junto e os erros na FBCF ficam de 45% a 80% maiores que os do
+AR(1), com o agravante de que, sob heurísticas, as famílias ainda trocam de
+regra em bloco. No ABM 1, em que o retorno é o produto marginal, essas mesmas
+regras são as melhores para a FBCF. As tabelas completas e as previsões
+registradas para 2026–2028 estão no [README da previsão](../README.md).
 
 ## Como rodar
 
-Da pasta `Econometria/`, com as dependências de `Python/requirements.txt`:
+Os comandos rodam a partir da pasta `Econometria/`, com as dependências de
+`Python/requirements.txt`.
 
 ```bash
 python Python/macroeconomia/Forecast/Brasil/2013T4-2026T2/abm2_sem_leiloeiro/experimentos_mercados.py   # o que emerge e sensibilidade (cerca de 3 minutos)
@@ -230,8 +217,8 @@ python -m unittest discover -s Python/macroeconomia/Forecast/Brasil/2013T4-2026T
 
 | Arquivo | Conteúdo |
 |---|---|
-| `descentralizada.py` | a economia sem leiloeiro: firmas, preços, salários, busca, mercado de bens e fundo; a referência walrasiana com os mesmos fundamentos |
-| `previsao_descentralizada.py` | o ABM no protocolo de previsão: aquecimento, história que reproduz PIB, gasto e desemprego, choques e réplicas |
+| `descentralizada.py` | a economia sem leiloeiro, com firmas, preços, salários, busca, mercado de bens e fundo, e a referência walrasiana com os mesmos fundamentos |
+| `previsao_descentralizada.py` | o ABM no protocolo de previsão, com aquecimento, história que reproduz PIB, gasto e desemprego, choques e réplicas |
 | `experimentos_mercados.py` | o que emerge sem choques agregados e a sensibilidade às regras das firmas |
 | `test_*.py` | 21 testes |
 | `resultados/`, `figuras/` | tabelas e figuras |
@@ -240,49 +227,49 @@ As famílias e as regras de expectativas vêm de `../abm1_com_leiloeiro/`.
 
 ## Limitações e próximos passos
 
-- **Retorno do capital ruidoso.** O retorno das famílias é o lucro
-  realizado do fundo, que oscila de um trimestre para outro, e as regras de
-  heurísticas e de atenção limitada o levam quase direto às crenças e ao
-  custo do capital das firmas. Suavizar o retorno que entra nas crenças, ou
-  dar às firmas um custo do capital de longo prazo, é o próximo ajuste.
-- **Recessões como choques de oferta.** Na história guiada pelos dados, os
-  dois ABMs explicam a queda do PIB pelo crescimento da produtividade (e o
-  ABM 2 explica o desemprego pela separação). Numa recessão, a
-  produtividade cai, o capital por unidade de eficiência sobe e o retorno do
-  capital cai. No ABM 2 com heurísticas, as famílias que levam o retorno
-  corrente às crenças baixam o custo do capital das firmas, e o investimento
-  do modelo sobe na recessão de 2015 e cai depois, justamente quando nos
-  dados ele se recuperava. Falta o canal de demanda e de crédito que fez o
-  investimento brasileiro cair em 2015-2016.
-- **Ciclos de desemprego.** Sem leiloeiro, o produto flutua sozinho, mas o
-  desemprego não: fica no nível friccional. Faltam os canais que fazem o
-  desemprego brasileiro oscilar: crédito, entrada e saída de firmas e
-  política monetária.
-- **O tamanho da margem.** A margem que emerge depende do teto que as
-  firmas se permitem; calibrá-lo com margens medidas nos dados é uma
-  extensão natural.
-- **Setores e rastreabilidade.** Depois disso, a ideia é levar os dois
-  modelos para vários setores com a matriz insumo-produto e as Tabelas de
-  Recursos e Usos do IBGE (agregadas em cerca de 12 setores) e registrar
-  cada transação:
-  1. no equilíbrio geral, firmas heterogêneas com variedades CES e uma rede
-     de insumos calibrada na matriz do IBGE, como em Bernard, Moxnes e Saito
-     (2019) e Baqaee e Farhi (2019). O fluxo de cada família para cada firma
-     e de cada firma para cada fornecedor fica determinado pelo equilíbrio e
-     pode ser calculado a qualquer momento, sem ser gravado, e a matriz de
-     contabilidade social sai completa;
-  2. no ABM, firmas por setor, mercados descentralizados, um banco e um
-     livro-razão de partidas dobradas (quem pagou, quem recebeu, o quê, em
-     que trimestre, por quanto), no espírito dos modelos *stock-flow
-     consistent* (Godley e Lavoie, 2007; Caiani et al., 2016) e do ABM da
-     Áustria de Poledna et al. (2023). Todo agregado passa a ser uma soma de
-     linhas do livro, e os testes verificam que as três óticas do PIB fecham.
+A limitação mais imediata é o retorno ruidoso do capital. O retorno das
+famílias é o lucro realizado do fundo, que oscila de um trimestre para outro,
+e as regras de heurísticas e de atenção limitada o levam quase direto às
+crenças e ao custo do capital das firmas, de modo que o próximo ajuste é
+suavizar o retorno que entra nas crenças ou dar às firmas um custo do capital
+de longo prazo.
 
-  Com isso dá para comparar a rede densa de transações do equilíbrio com a
-  rede esparsa que emerge no ABM, e as duas com a matriz do IBGE.
-- **O que ainda é imposto.** Com o leiloeiro, os mercados se equilibram a
-  cada trimestre; sem ele, não, mas as famílias ainda formam as políticas
-  com o risco de desemprego da PNAD, e não com o que elas vivem. Nos dois
-  casos, a tabela de políticas supõe o perfil de transferências do estado
-  estacionário, e as regras de crenças fixas e de atenção limitada conhecem
-  o equilíbrio por definição.
+Há também a forma como as recessões entram no modelo. Na história guiada
+pelos dados, os dois ABMs explicam a queda do PIB pelo crescimento da
+produtividade, e o ABM 2 explica o desemprego pela separação. Numa recessão a
+produtividade cai, o capital por unidade de eficiência sobe e o retorno do
+capital cai, e no ABM 2 com heurísticas as famílias que levam o retorno
+corrente às crenças baixam o custo do capital das firmas, fazendo o
+investimento do modelo subir na recessão de 2015 e cair depois, justamente
+quando nos dados ele se recuperava. Falta o canal de demanda e de crédito que
+fez o investimento brasileiro cair em 2015–2016. Pelo mesmo motivo, sem
+leiloeiro o produto flutua sozinho mas o desemprego não, ficando no nível
+friccional, e faltam os canais que fazem o desemprego brasileiro oscilar,
+como o crédito, a entrada e saída de firmas e a política monetária. O tamanho
+da margem que emerge, por sua vez, depende do teto que as firmas se
+permitem, e calibrá-lo com margens medidas nos dados é uma extensão natural.
+
+Depois disso, a ideia é levar os dois modelos para vários setores, com a
+matriz insumo-produto e as Tabelas de Recursos e Usos do IBGE agregadas em
+cerca de 12 setores, e registrar cada transação. No equilíbrio geral isso
+significa firmas heterogêneas com variedades CES e uma rede de insumos
+calibrada na matriz do IBGE, como em Bernard, Moxnes e Saito (2019) e Baqaee
+e Farhi (2019), em que o fluxo de cada família para cada firma e de cada
+firma para cada fornecedor fica determinado pelo equilíbrio e pode ser
+calculado a qualquer momento sem ser gravado, o que dá a matriz de
+contabilidade social completa. No ABM significa firmas por setor, mercados
+descentralizados, um banco e um livro-razão de partidas dobradas que registra
+quem pagou, quem recebeu, o quê, em que trimestre e por quanto, no espírito
+dos modelos *stock-flow consistent* (Godley e Lavoie, 2007; Caiani et al.,
+2016) e do ABM da Áustria de Poledna et al. (2023), em que todo agregado
+passa a ser uma soma de linhas do livro e os testes verificam que as três
+óticas do PIB fecham. Com isso será possível comparar a rede densa de
+transações do equilíbrio com a rede esparsa que emerge no ABM, e as duas com
+a matriz do IBGE.
+
+Resta, por fim, o que ainda é imposto. Com o leiloeiro os mercados se
+equilibram a cada trimestre e sem ele não, mas em ambos os casos as famílias
+ainda formam suas políticas com o risco de desemprego da PNAD, e não com o
+que de fato vivem, a tabela de políticas supõe o perfil de transferências do
+estado estacionário e as regras de crenças fixas e de atenção limitada
+conhecem o equilíbrio por definição.
