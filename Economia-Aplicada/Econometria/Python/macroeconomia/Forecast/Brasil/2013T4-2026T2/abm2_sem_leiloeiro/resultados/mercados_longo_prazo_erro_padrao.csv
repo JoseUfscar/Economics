@@ -1,0 +1,4 @@
+economia,produto,capital,salário real,juro líquido (%),desemprego (%),margem (%),participação do trabalho (%),famílias racionadas (%),ficaram sem comprar tudo (%),procura até 1 ano (%),procura 1 a 2 anos (%),procura 2 anos ou mais (%),desvio do crescimento anual (p.p.),autocorrelação do crescimento,desvio do desemprego (p.p.),coeficiente de Okun,correlação vagas x desemprego
+"sem leiloeiro, aprendizado",0.0095871,0.0116602,0.0100845,0.0231817,0.209305,0.0570031,0.0571269,0.805733,0.0110922,0.440744,0.0878632,0.357115,0.156872,0.0547947,0.623664,0.0655177,0.134009
+"sem leiloeiro, heurísticas",0.00639389,0.00631996,0.00588757,0.0133191,0.0119869,0.0527061,0.0432704,0.202697,1.17966e-05,0.0228876,0.0155238,0.0210357,0.0867036,0.0189928,0.0281464,0.00658357,0.0729204
+"sem leiloeiro, atenção limitada",0.000553614,0.000889364,0.00123063,0.0128737,0.113836,0.107969,0.0184093,0.161346,0.00271354,0.260221,0.0356658,0.226419,0.147154,0.00662283,0.195479,0.00213026,0.126371
