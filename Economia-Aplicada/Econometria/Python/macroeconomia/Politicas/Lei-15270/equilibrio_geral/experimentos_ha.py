@@ -8,11 +8,22 @@ calculado em calibracao.py e é inesperado. A receita nova volta às famílias
 de duas formas:
 
   - uniforme: transferência igual para todas as famílias;
-  - isenção: só para os empregados do grupo intermediário (P50-P90), que
-    contém quem ganha de R$ 3 mil a R$ 7,35 mil por mês, a faixa beneficiada
-    pela redução do imposto de renda (limites de percentil da PNAD de 2025).
+  - isenção: só para os empregados do grupo intermediário (P50-P90). Pelos
+    limites de percentil da PNAD de 2025, o grupo termina em R$ 6.985 por
+    mês (P90) e contém quase toda a faixa beneficiada pela lei, de R$ 3 mil a
+    R$ 7.350; só a ponta de cima, onde o desconto já é pequeno, cai nos 10%
+    com maior renda.
+
+Nas duas, toda a receita nova volta às famílias. Como a isenção custa menos
+que a receita nova (R$ 25,84 bi contra R$ 34,12 bi em 2026), uma terceira
+conta dá ao grupo intermediário só a fração 25,84/34,12 da transferência e
+divide o resto igualmente ("isenção, resto uniforme"). Ela entra no CSV, não
+nas figuras.
 
 O modelo representativo (modelo.py) serve de comparação: nele todos perdem.
+
+O resumo vai para resultados/ha_bem_estar.csv, que os experimentos da lei
+nos ABMs usam como referência.
 
 Rode a partir da pasta Econometria/ (cerca de 3 minutos):
 
@@ -30,7 +41,8 @@ import pandas as pd
 
 from aiyagari import (EquilibrioHA, Governo, Grade, TransicaoHA, calibrar_rho, equilibrio,
                       ganho_bem_estar, transicao)
-from calibracao import aumento_tau_k_lei, calcular_alvos, calibrar, carregar_dados
+from calibracao import (RECEITA_LEI_15270, RENUNCIA_ISENCAO, aumento_tau_k_lei, calcular_alvos,
+                        calibrar, carregar_dados)
 from calibracao_renda import GRUPOS, carregar_pnad, renda_brasil
 from experimentos import (AZUL, FUNDO, LARANJA, PASTA_FIGURAS, TINTA, TINTA_2, _br, _estilo,
                           _virgula, choque_tau_k, efeitos)
@@ -39,6 +51,19 @@ from modelo import estado_estacionario
 GRADE = Grade(a_max=150.0, pontos=600, curvatura=2.0)
 TIPOS = list(GRUPOS)
 VARIANTES = {"uniforme": None, "isenção": (0, 0, 0, 1, 0, 0, 0, 0, 0)}
+PASTA_RESULTADOS = Path(__file__).resolve().parent / "resultados"
+
+
+def pesos_isencao_parcial(pi, fracao: float = RENUNCIA_ISENCAO / RECEITA_LEI_15270) -> np.ndarray:
+    """
+    Pesos em que a fração `fracao` da transferência vai para os empregados do
+    grupo intermediário e o resto se divide igualmente entre todos. Como
+    aiyagari.Governo normaliza os pesos pela média ponderada, basta somar
+    as duas partes, cada uma com média 1.
+    """
+    pi = np.asarray(pi, dtype=float)
+    isencao = np.asarray(VARIANTES["isenção"], dtype=float)
+    return tuple(fracao * isencao / (pi @ isencao) + (1 - fracao))
 TONS_TIPOS = ("#86b6ef", "#2a78d6", "#104281")   # rampa ordinal azul: base, meio, topo
 # World Inequality Database (wid.world), Brasil, 2021: os 10% mais ricos têm
 # cerca de 80% da riqueza e os 50% mais pobres, riqueza líquida em torno de zero.
@@ -240,16 +265,26 @@ def main() -> None:
         print(desigualdade(eq0).to_string(index=False, float_format="%.3f"))
 
     reformas = [reforma(eq0, base.choque, pesos, nome) for nome, pesos in VARIANTES.items()]
+    parcial = reforma(eq0, base.choque, pesos_isencao_parcial(eq0.renda.estacionaria),
+                      "isenção, resto uniforme")
     ganho_ra = efeitos(base.eco_ra, base.pol_ra, base.choque, 0.8)["bem-estar, surpresa (%)"]
-    resumos = {}
-    for ref in reformas:
-        resumos[ref.nome] = resumo_bem_estar(eq0, ref)
+    resumos, tabelas = {}, []
+    for ref in reformas + [parcial]:
+        resumo = resumo_bem_estar(eq0, ref)
+        if ref is not parcial:
+            resumos[ref.nome] = resumo
+        tabelas.append(resumo.assign(devolucao=ref.nome,
+                                     capital_longo_prazo=100 * (ref.eq1.K / eq0.K - 1)))
         print(f"\nDevolução {ref.nome}: capital de longo prazo {100 * (ref.eq1.K / eq0.K - 1):+.2f}% "
               f"(representativo -1,46%); transição em {ref.tr.iteracoes} iterações")
-        print(resumos[ref.nome].to_string(index=False, float_format="%.3f"))
+        print(resumo.to_string(index=False, float_format="%.3f"))
         decis = ganho_por_decil_de_riqueza(eq0, ref.lam)
         print("Ganho médio por décimo de riqueza (%):", " ".join(f"{v:+.3f}" for v in decis))
     print(f"\nModelo representativo: {ganho_ra:.3f}% para todos")
+    PASTA_RESULTADOS.mkdir(exist_ok=True)
+    pd.concat(tabelas, ignore_index=True)[
+        ["devolucao", "grupo", "ganha (%)", "ganho médio (%)", "ganho utilitário (%)", "capital_longo_prazo"]
+    ].to_csv(PASTA_RESULTADOS / "ha_bem_estar.csv", index=False, float_format="%.6g")
 
     figura_lorenz(eq0, PASTA_FIGURAS / "ha_lorenz.png")
     figura_bem_estar(eq0, reformas, PASTA_FIGURAS / "ha_bem_estar.png")

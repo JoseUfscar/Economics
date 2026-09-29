@@ -38,6 +38,9 @@ TAU_K_BRUTO = 0.18
 # com o imposto mínimo sobre altas rendas (25,22) e a tributação de dividendos
 # remetidos ao exterior (8,90).
 RECEITA_LEI_15270 = 25.22 + 8.90
+# A mesma Exposição de Motivos estima em 25,84 a renúncia com a isenção e a
+# redução do imposto de renda em 2026, em R$ bilhões.
+RENUNCIA_ISENCAO = 25.84
 
 
 @dataclass(frozen=True)

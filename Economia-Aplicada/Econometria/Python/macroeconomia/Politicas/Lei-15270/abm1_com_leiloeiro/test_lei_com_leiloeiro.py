@@ -26,9 +26,10 @@ class TestLei(unittest.TestCase):
     def test_novo_estado_estacionario_igual_ao_do_aiyagari_continuo(self):
         # Duas soluções independentes do mesmo modelo: grade endógena trimestral
         # e HJB em tempo contínuo (equilibrio_geral/aiyagari.py).
+        ha_capital, _ = XA.referencia_ha()
         for devolucao, cal1 in self.reformas.items():
             variacao = 100 * (cal1.est.K / self.cal0.est.K - 1)
-            self.assertAlmostEqual(variacao, XA.HA_CAPITAL[devolucao], delta=0.05, msg=devolucao)
+            self.assertAlmostEqual(variacao, ha_capital[devolucao], delta=0.05, msg=devolucao)
 
     def test_receita_nova_volta_como_transferencia(self):
         for cal1 in self.reformas.values():

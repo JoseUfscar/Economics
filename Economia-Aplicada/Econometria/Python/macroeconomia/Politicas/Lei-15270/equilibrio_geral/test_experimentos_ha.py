@@ -10,7 +10,8 @@ import numpy as np
 
 from aiyagari import Grade, grade_temporal
 from experimentos_ha import (VARIANTES, desigualdade, economia_ha, figura_grupos,
-                             ganho_por_decil_de_riqueza, reforma, resumo_bem_estar)
+                             ganho_por_decil_de_riqueza, pesos_isencao_parcial, reforma,
+                             resumo_bem_estar)
 
 
 class TestExperimentosHA(unittest.TestCase):
@@ -53,6 +54,14 @@ class TestExperimentosHA(unittest.TestCase):
             self.assertAlmostEqual(massas @ grupos["ganho médio (%)"].to_numpy(),
                                    r.loc["todos", "ganho médio (%)"], places=10)
             self.assertTrue(np.all((r["ganha (%)"] >= 0) & (r["ganha (%)"] <= 100)))
+
+    def test_pesos_da_isencao_parcial(self):
+        pi = np.asarray(self.base.eq0.renda.estacionaria)
+        pesos = np.asarray(pesos_isencao_parcial(pi, 0.75))
+        self.assertAlmostEqual(pi @ pesos, 1.0)
+        # O grupo intermediário empregado recebe 75% da transferência total.
+        self.assertAlmostEqual(pi[3] * pesos[3], 0.75 + 0.25 * pi[3])
+        self.assertTrue(np.allclose(np.delete(pesos, 3), 0.25))
 
     def test_capital_cai_como_no_modelo_representativo(self):
         for ref in self.reformas.values():

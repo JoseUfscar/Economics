@@ -1,0 +1,13 @@
+devolucao,grupo,ganha (%),ganho médio (%),ganho utilitário (%),capital_longo_prazo
+uniforme,50% com menor renda,99.9821,0.579019,0.607396,-1.44748
+uniforme,40% seguintes,29.2164,-0.0567809,-0.0406307,-1.44748
+uniforme,10% com maior renda,0,-0.349493,-0.339196,-1.44748
+uniforme,todos,61.6776,0.231848,0.446303,-1.44748
+isenção,50% com menor renda,0,-0.423902,-0.416214,-1.41209
+isenção,40% seguintes,99.8635,0.486123,0.510262,-1.41209
+isenção,10% com maior renda,0,-0.438787,-0.430168,-1.41209
+isenção,todos,39.9454,-0.0613805,-0.207221,-1.41209
+"isenção, resto uniforme",50% com menor renda,2.51224,-0.179223,-0.166442,-1.42083
+"isenção, resto uniforme",40% seguintes,98.9102,0.35373,0.37594,-1.42083
+"isenção, resto uniforme",10% com maior renda,0,-0.417008,-0.407982,-1.42083
+"isenção, resto uniforme",todos,40.8202,0.0101794,-0.0469256,-1.42083
