@@ -134,6 +134,13 @@ transferência e o resto volta igualmente a todos, a metade mais pobre perde
 0,18%, o grupo intermediário ganha 0,35%, os 10% com maior renda perdem 0,42%
 e o ganho médio fica em zero (`resultados/ha_bem_estar.csv`).
 
+Nessas contas, a transferência inteira segue os pesos da devolução, inclusive
+o que os outros impostos deixam de arrecadar quando os salários e o capital
+caem. Se só a receita do aumento da alíquota vai para o grupo intermediário e
+essa perda se divide igualmente entre todos, a metade mais pobre perde mais,
+0,60%, o grupo intermediário ganha 0,58% e os 10% com maior renda perdem
+0,45%. É a regra do ABM sem leiloeiro, que usa esta conta como comparação.
+
 ## Como rodar
 
 Da pasta `Econometria/`, com as dependências de `Python/requirements.txt`:
