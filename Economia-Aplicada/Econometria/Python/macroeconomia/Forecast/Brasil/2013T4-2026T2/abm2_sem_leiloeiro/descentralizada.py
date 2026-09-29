@@ -202,7 +202,6 @@ class Economia:
     cal: E.Calibrada
     comp: Comportamento
     fluxos: Fluxos
-    tau_k_base: float | None = None   # numa reforma, a alíquota de antes: a receita a mais segue os pesos
 
     @property
     def media_log_phi(self) -> float:
@@ -243,7 +242,6 @@ class Estado:
     # agregados
     r: float                 # último retorno líquido do fundo, taxa anual
     governo: float           # saldo do governo: gasto não realizado e imposto sobre o lucro
-    governo_reforma: float = 0.0   # a parte do imposto que vem do aumento da alíquota
     log_X: float = 0.0
     c: np.ndarray | None = None   # consumo (quantidade) de cada família no trimestre anterior
     pib: float = np.nan      # produto do trimestre anterior (taxa anual, unidades de eficiência dele)
@@ -534,7 +532,8 @@ def _separacao_para(eco: Economia, e: Estado, eficiencia: np.ndarray, alvo: floa
 
 def trimestre(eco: Economia, e: Estado, rng, log_gamma: float | None = None, gasto: float | None = None,
               crescimento_pib: float | None = None, crescimento_gasto: float | None = None,
-              separacao: float | None = None, desemprego_alvo: float | None = None) -> tuple[Estado, dict]:
+              separacao: float | None = None, desemprego_alvo: float | None = None,
+              transferencia_base: float | None = None) -> tuple[Estado, dict]:
     """
     Um trimestre. O crescimento da produtividade é log_gamma ou, com
     `crescimento_pib` (Delta log do PIB a reproduzir), o que faz o produto do
@@ -542,6 +541,13 @@ def trimestre(eco: Economia, e: Estado, rng, log_gamma: float | None = None, gas
     de eficiência) ou cresce `crescimento_gasto` (Delta log). A probabilidade
     de separação é a da PNAD, `separacao` ou a que leva o desemprego ao fim
     do trimestre a `desemprego_alvo`.
+
+    A transferência do governo segue os pesos da calibração (iguais para
+    todos, fora das reformas). Numa reforma, `transferencia_base` é a
+    transferência da economia sem reforma no mesmo trimestre: essa parte
+    continua igual para todos, e só a diferença, o que a reforma muda no
+    orçamento, segue os pesos. É a regra do Aiyagari contínuo e do ABM com
+    leiloeiro, em que a transferência sem reforma é zero.
     """
     cal, comp, fluxos = eco.cal, eco.comp, eco.fluxos
     par, renda = cal.par, cal.renda
@@ -572,7 +578,6 @@ def trimestre(eco: Economia, e: Estado, rng, log_gamma: float | None = None, gas
     fator = np.exp(-log_gamma - par.n * D)
     a, k, x = e.s * fator, e.k * fator, e.x * fator * (1 - comp.depreciacao_estoque)
     esperadas, governo = e.vendas_esperadas * fator, e.governo * fator
-    governo_reforma = e.governo_reforma * fator
     if gasto is None:
         gasto = e.G * np.exp(crescimento_gasto) * fator
 
@@ -589,12 +594,10 @@ def trimestre(eco: Economia, e: Estado, rng, log_gamma: float | None = None, gas
     z = renda.z[j]
     bruta = np.where(empregado, e.w[np.maximum(empregador, 0)] * z, w_medio * z)
     B = float(np.mean(np.where(empregado, 0.0, w_medio * z)))
-    # A receita que vem do aumento da alíquota (numa reforma) volta com os pesos
-    # da reforma; o resto do orçamento, igual para todos.
-    T_reforma = governo_reforma / D
     T = par.tau_w * (W + B) - B - gasto + governo / D
+    base = 0.0 if transferencia_base is None else transferencia_base
     pesos = cal.pesos[j]
-    renda_disponivel = (1 - par.tau_w) * bruta + (T - T_reforma) + T_reforma * pesos / pesos.mean()
+    renda_disponivel = (1 - par.tau_w) * bruta + base + (T - base) * pesos / pesos.mean()
     m = a + D * renda_disponivel
 
     # 6. Crenças, consumo e investimento desejados.
@@ -657,8 +660,6 @@ def trimestre(eco: Economia, e: Estado, rng, log_gamma: float | None = None, gas
     governo_antes = pedido_governo - gasto_governo
     lucro = ativos - float(poupanca.mean()) - governo_antes
     imposto = par.tau_k * lucro
-    base = par.tau_k if eco.tau_k_base is None else eco.tau_k_base
-    imposto_reforma = (par.tau_k - base) * lucro
     liquido = (1 - par.tau_k) * lucro
     s_novo = poupanca * (1 + liquido / poupanca.mean())
     r = liquido / (poupanca.mean() * D)
@@ -696,7 +697,7 @@ def trimestre(eco: Economia, e: Estado, rng, log_gamma: float | None = None, gas
                   crencas=e.crencas, log_phi=log_phi, k=k_novo, x=x_novo, p=p, w=w, margem=margem,
                   quadro_alvo=quadro_alvo,
                   vendas_esperadas=esperadas_novas, sem_vaga=sem_vaga, r=r,
-                  governo=governo_antes + imposto, governo_reforma=imposto_reforma, log_X=log_X, c=c,
+                  governo=governo_antes + imposto, log_X=log_X, c=c,
                   pib=Y, G=gasto)
     return novo, registro
 

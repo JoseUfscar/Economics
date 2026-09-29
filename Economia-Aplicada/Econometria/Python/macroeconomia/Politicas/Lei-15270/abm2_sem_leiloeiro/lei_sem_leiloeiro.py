@@ -1,17 +1,27 @@
 """
 A Lei 15.270/2025 no ABM sem leiloeiro (Forecast/Brasil/2013T4-2026T2/
 abm2_sem_leiloeiro): o mesmo aumento de tau_k de equilibrio_geral, com as duas
-formas de devolver a receita de lei_com_leiloeiro.py, em várias sementes. A
-economia flutua sozinha, e uma semente só mistura o efeito da lei com o
-ciclo; em cada semente, as economias com e sem reforma recebem os mesmos
-números aleatórios, e a média das sementes separa o efeito da lei.
+formas de devolver a receita de lei_com_leiloeiro.py, em várias sementes.
 
-Rode a partir da pasta Econometria/ (cerca de 15 minutos com 4 núcleos):
+Em cada semente, a economia parte da referência walrasiana e roda 100 anos
+sem reforma, o mesmo aquecimento da previsão, para chegar ao regime do
+próprio ABM (margens, estoques, capital e crenças). Daí se separa em três
+cópias com os mesmos números aleatórios: sem reforma, com devolução uniforme
+e com devolução por isenção. Como na economia com leiloeiro e no Aiyagari,
+o que a reforma muda no orçamento do governo volta às famílias pelos pesos
+da devolução: a transferência da economia sem reforma, trimestre a
+trimestre, continua igual para todos, e a diferença segue os pesos.
+
+A economia flutua sozinha, e uma semente só mistura o efeito da lei com o
+ciclo; a média das sementes separa os dois.
+
+Rode a partir da pasta Econometria/ (cerca de 10 minutos com 4 núcleos):
 
     python Python/macroeconomia/Politicas/Lei-15270/abm2_sem_leiloeiro/lei_sem_leiloeiro.py
 """
 from __future__ import annotations
 
+import copy
 import sys
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import replace
@@ -35,37 +45,46 @@ from lei_com_leiloeiro import DEVOLUCOES, resumo_bem_estar  # noqa: E402
 
 PASTA = Path(__file__).resolve().parent
 ANOS_LEI = 150
+AQUECIMENTO = 400        # trimestres sem reforma antes dela, como na previsão
 SEMENTES_LEI = range(48)
 
 
 def _economia_da_lei(args):
-    """Uma semente: sem reforma e com cada devolução, com os mesmos números aleatórios."""
-    eco0, reformas, semente, trimestres = args
+    """
+    Uma semente: aquecimento sem reforma e, a partir do mesmo estado e dos
+    mesmos números aleatórios, a economia sem reforma e com cada devolução.
+    """
+    eco0, reformas, semente, trimestres, aquecimento, n_familias = args
     par = eco0.cal.par
     D = par.periodo
     desconto = np.exp(-(par.rho - par.n - (1 - par.theta) * par.g) * D)
-    saida = {}
+    rng = np.random.default_rng(semente)
+    inicio = DC.estado_inicial(eco0, X.Aprendizado(), n_familias, rng)
+    inicio, _ = DC.simular(eco0, inicio, rng, aquecimento)
+    estado_rng = rng.bit_generator.state
+    saida, base = {}, None
     for nome, eco in (("sem reforma", eco0), *reformas.items()):
-        rng = np.random.default_rng(semente)
-        regra = X.Aprendizado()
-        estado = DC.estado_inicial(eco0, regra, N, rng)
-        regra.herdar(eco0.cal.est.r, eco0.cal.est.w)
+        rng.bit_generator.state = estado_rng
+        estado = copy.deepcopy(inicio)
         tipo = estado.tipo
-        bem_estar, peso, linhas = np.zeros(N), 1.0, []
-        for _ in range(trimestres):
-            estado, registro = DC.trimestre(eco, estado, rng, par.g * D, par.gasto)
+        bem_estar, peso, linhas = np.zeros(n_familias), 1.0, []
+        for t in range(trimestres):
+            estado, registro = DC.trimestre(eco, estado, rng, par.g * D, par.gasto,
+                                            transferencia_base=None if base is None else base[t])
             bem_estar += peso * D * estado.c ** (1 - par.theta) / (1 - par.theta)
             peso *= desconto
             linhas.append(registro)
         saida[nome] = (pd.DataFrame(linhas), bem_estar, tipo)
+        if base is None:
+            base = saida[nome][0].transferencia.to_numpy()
     return semente, saida
 
 
-def lei(eco0: DC.Economia, aumento: float, sementes=SEMENTES_LEI, anos: int = ANOS_LEI):
-    reformas = {nome: replace(eco0, cal=DC.reformada(eco0.cal, aumento, pesos),
-                              tau_k_base=eco0.cal.par.tau_k)
+def lei(eco0: DC.Economia, aumento: float, sementes=SEMENTES_LEI, anos: int = ANOS_LEI,
+        aquecimento: int = AQUECIMENTO, n_familias: int = N):
+    reformas = {nome: replace(eco0, cal=DC.reformada(eco0.cal, aumento, pesos))
                 for nome, pesos in DEVOLUCOES.items()}
-    casos = [(eco0, reformas, s, 4 * anos) for s in sementes]
+    casos = [(eco0, reformas, s, 4 * anos, aquecimento, n_familias) for s in sementes]
     with ProcessPoolExecutor() as executor:
         resultados = dict(executor.map(_economia_da_lei, casos))
     tabelas, caminhos = [], {}
