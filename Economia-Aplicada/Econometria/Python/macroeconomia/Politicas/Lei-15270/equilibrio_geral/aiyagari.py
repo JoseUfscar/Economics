@@ -85,12 +85,30 @@ class Governo:
     tau_w: float = 0.0
     gasto: float = 0.0
     pesos: tuple | None = None   # T_z = pesos_z * T médio, com média ponderada 1
+    # Com tau_k_base (a alíquota de antes de uma reforma), só a receita do
+    # aumento de tau_k segue os pesos; o resto da transferência, inclusive o
+    # que a base dos outros impostos perde, se divide igualmente.
+    tau_k_base: float | None = None
 
-    def transferencias(self, renda: Renda, media) -> np.ndarray:
-        """T_z para uma transferência média (escalar ou vetor no tempo)."""
+    def transferencias(self, renda: Renda, media, reforma=None) -> np.ndarray:
+        """
+        T_z para uma transferência média (escalar ou vetor no tempo). Sem
+        `reforma`, a transferência inteira segue os pesos; com ela (a receita
+        do aumento de tau_k, calculada por `receita_reforma`), só essa parte.
+        """
         pesos = np.ones(len(renda.z)) if self.pesos is None else np.asarray(self.pesos, float)
         pesos = pesos / (renda.estacionaria @ pesos)
-        return np.multiply.outer(np.asarray(media, dtype=float), pesos)
+        media = np.asarray(media, dtype=float)
+        if reforma is None:
+            return np.multiply.outer(media, pesos)
+        reforma = np.asarray(reforma, dtype=float)
+        return np.multiply.outer(media - reforma, np.ones(len(renda.z))) + np.multiply.outer(reforma, pesos)
+
+    def receita_reforma(self, tau_k, r, K):
+        """Receita do aumento de tau_k sobre tau_k_base, ou None sem tau_k_base."""
+        if self.tau_k_base is None:
+            return None
+        return (np.asarray(tau_k) - self.tau_k_base) * np.asarray(r) * np.asarray(K)
 
 
 @dataclass(frozen=True)
@@ -284,7 +302,7 @@ def renda_nao_capital(eco: Economia, renda: Renda, gov: Governo, r, K):
     """Salário líquido mais transferência por estado, com o orçamento fechado."""
     _, w = precos(eco, K)
     media = gov.tau_k * np.asarray(r) * np.asarray(K) + gov.tau_w * w - gov.gasto
-    transf = gov.transferencias(renda, media)
+    transf = gov.transferencias(renda, media, gov.receita_reforma(gov.tau_k, r, K))
     return (1 - gov.tau_w) * np.multiply.outer(w, np.asarray(renda.z)) + transf, w, transf
 
 
@@ -411,7 +429,7 @@ def transicao(inicial: EquilibrioHA, gov_novo: Governo, final: EquilibrioHA,
         r, w = precos(eco, K)
         media = tau_k * r * K + gov_novo.tau_w * w - gov_novo.gasto
         receitas = ((1 - gov_novo.tau_w) * np.multiply.outer(w, np.asarray(renda.z))
-                    + gov_novo.transferencias(renda, media))
+                    + gov_novo.transferencias(renda, media, gov_novo.receita_reforma(tau_k, r, K)))
         V = final.familias.V
         geradores = [None] * N
         consumo = np.zeros((N + 1, I, J))

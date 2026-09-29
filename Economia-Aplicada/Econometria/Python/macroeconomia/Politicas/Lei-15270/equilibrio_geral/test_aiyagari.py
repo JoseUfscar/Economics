@@ -14,6 +14,28 @@ SEM_RISCO = Renda(z=(1.0,), intensidades=((0.0,),))
 RISCO = renda_dois_estados(0.5, 1.0, 1 / 9)
 
 
+class TestRegraDaDevolucao(unittest.TestCase):
+    def test_so_a_receita_nova_segue_os_pesos(self):
+        renda = renda_dois_estados(0.4, 4.0, 0.5)
+        pesos = (0.0, 1.0)
+        a = Governo(tau_k=0.3, pesos=pesos)
+        b = Governo(tau_k=0.3, pesos=pesos, tau_k_base=0.25)
+        media, r, K = 0.2, 0.1, 3.0
+        reforma = b.receita_reforma(b.tau_k, r, K)
+        self.assertAlmostEqual(reforma, 0.05 * r * K)
+        self.assertIsNone(a.receita_reforma(a.tau_k, r, K))
+        Tb = b.transferencias(renda, media, reforma)
+        self.assertAlmostEqual(renda.estacionaria @ Tb, media)   # a média não muda
+        self.assertAlmostEqual(Tb[0], media - reforma)            # quem não recebe a devolução
+        # Com pesos iguais, as duas regras dão o mesmo.
+        np.testing.assert_allclose(Governo(tau_k=0.3).transferencias(renda, media),
+                                   Governo(tau_k=0.3, tau_k_base=0.25).transferencias(renda, media, reforma))
+        # Sem aumento de alíquota, os pesos não importam.
+        c = Governo(tau_k=0.3, pesos=pesos, tau_k_base=0.3)
+        np.testing.assert_allclose(c.transferencias(renda, media, c.receita_reforma(0.3, r, K)),
+                                   [media, media])
+
+
 class TestFamilias(unittest.TestCase):
     def test_sem_risco_segue_a_regra_de_consumo_do_modelo_representativo(self):
         # Sem risco e com r_liq > rho + theta g, a restrição nunca aperta e

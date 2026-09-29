@@ -163,7 +163,7 @@ nesta pasta.
 | `calibracao_renda.py` | risco de desemprego e tipos de renda a partir da PNAD Contínua |
 | `experimentos_ha.py` | parte 2: quem ganha e quem perde, desigualdade e figuras |
 | `resultados/ha_bem_estar.csv` | ganho de bem-estar por grupo e capital de longo prazo em cada devolução, usados pelos experimentos da lei nos ABMs |
-| `test_*.py` | 54 testes: equações, soluções exatas, identidades contábeis, calibrações, experimentos e estimação |
+| `test_*.py` | 55 testes: equações, soluções exatas, identidades contábeis, calibrações, experimentos e estimação |
 | `nota_tecnica.tex`, `.pdf` | derivação, métodos, resultados e referências |
 
 A [versão em Julia](../../../../../Julia/macroeconomia/equilibrio_geral/ramsey.jl)

@@ -233,11 +233,17 @@ def precos(par: Parametros, K: float, trabalho: float = 1.0):
 
 
 def rendas(par: Parametros, renda: Renda, w: float, transferencia_media: float,
-           pesos: np.ndarray | None = None) -> np.ndarray:
-    """y_j = (1 - tau_w) w z_j + T_j, com T_j = pesos_j T médio (média ponderada dos pesos = 1)."""
+           pesos: np.ndarray | None = None, reforma: float | None = None) -> np.ndarray:
+    """
+    y_j = (1 - tau_w) w z_j + T_j, com T_j = pesos_j T médio (média ponderada
+    dos pesos = 1). Com `reforma` (a receita do aumento de tau_k numa
+    reforma), só ela segue os pesos, e o resto se divide igualmente.
+    """
     pesos = np.ones(renda.estados) if pesos is None else np.asarray(pesos, dtype=float)
     pesos = pesos / (renda.pi @ pesos)
-    return (1 - par.tau_w) * w * renda.z + transferencia_media * pesos
+    if reforma is None:
+        return (1 - par.tau_w) * w * renda.z + transferencia_media * pesos
+    return (1 - par.tau_w) * w * renda.z + (transferencia_media - reforma) + reforma * pesos
 
 
 @dataclass
@@ -253,6 +259,7 @@ class Estacionario:
     politica: Politica
     distribuicao: Distribuicao
     beneficio: np.ndarray | None = None   # estados que recebem benefício em vez de produzir
+    reforma: float | None = None           # receita do aumento de tau_k que segue os pesos, se houver
 
 
 def trabalho_e_beneficio(renda: Renda, beneficio: np.ndarray | None) -> tuple[float, float]:
@@ -268,15 +275,16 @@ def trabalho_e_beneficio(renda: Renda, beneficio: np.ndarray | None) -> tuple[fl
     return float(renda.pi[~beneficio] @ renda.z[~beneficio]), float(renda.pi[beneficio] @ renda.z[beneficio])
 
 
-def _resolver_com_K(par, renda, K, pesos, grades, inicial=None, beneficio=None):
+def _resolver_com_K(par, renda, K, pesos, grades, inicial=None, beneficio=None, tau_k_base=None):
     L, B = trabalho_e_beneficio(renda, beneficio)
     R, w, y = precos(par, K, L)
     r = (1 - par.tau_k) * (R - par.delta)
     transferencia = par.tau_k * (R - par.delta) * K + par.tau_w * w * (L + B) - par.gasto - w * B
-    y_j = rendas(par, renda, w, transferencia, pesos)
+    reforma = None if tau_k_base is None else (par.tau_k - tau_k_base) * (R - par.delta) * K
+    y_j = rendas(par, renda, w, transferencia, pesos, reforma)
     pol = resolver_politica(par, renda, r, y_j, grades.poupanca(w), inicial)
     dist = distribuicao_estacionaria(par, renda, pol, grades.riqueza(w))
-    return Estacionario(par, renda, pesos, K, r, w, y, transferencia, pol, dist, beneficio)
+    return Estacionario(par, renda, pesos, K, r, w, y, transferencia, pol, dist, beneficio, reforma)
 
 
 def calibrar(par: Parametros, renda: Renda, capital_produto: float, gasto_pib: float,
@@ -312,8 +320,13 @@ def calibrar(par: Parametros, renda: Renda, capital_produto: float, gasto_pib: f
 
 
 def equilibrio(par: Parametros, renda: Renda, pesos=None, grades: Grades = Grades(),
-               K_inicial: float | None = None, beneficio: np.ndarray | None = None) -> Estacionario:
-    """Equilíbrio estacionário: K tal que a poupança das famílias iguala a demanda da firma."""
+               K_inicial: float | None = None, beneficio: np.ndarray | None = None,
+               tau_k_base: float | None = None) -> Estacionario:
+    """
+    Equilíbrio estacionário: K tal que a poupança das famílias iguala a
+    demanda da firma. Com `tau_k_base`, só a receita do aumento de tau_k
+    segue os pesos da transferência (ver `rendas`).
+    """
     L, _ = trabalho_e_beneficio(renda, beneficio)
     r_max = par.r_limite() - 1e-6
     R_max = r_max / (1 - par.tau_k) + par.delta
@@ -321,7 +334,8 @@ def equilibrio(par: Parametros, renda: Renda, pesos=None, grades: Grades = Grade
     cache = {}
 
     def excesso(logK):
-        est = _resolver_com_K(par, renda, np.exp(logK), pesos, grades, cache.get("pol"), beneficio)
+        est = _resolver_com_K(par, renda, np.exp(logK), pesos, grades, cache.get("pol"), beneficio,
+                              tau_k_base)
         cache["pol"] = est.politica
         return est.distribuicao.media - np.exp(logK)
 
@@ -332,7 +346,8 @@ def equilibrio(par: Parametros, renda: Renda, pesos=None, grades: Grades = Grade
     while excesso(alto) > 0:
         alto += 0.05
     logK = brentq(excesso, baixo, alto, xtol=1e-10)
-    return _resolver_com_K(par, renda, np.exp(logK), pesos, grades, cache.get("pol"), beneficio)
+    return _resolver_com_K(par, renda, np.exp(logK), pesos, grades, cache.get("pol"), beneficio,
+                           tau_k_base)
 
 
 # --- políticas para crenças de juro diferentes do equilíbrio -------------------

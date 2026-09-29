@@ -7,15 +7,24 @@ Em cada semente, a economia parte da referência walrasiana e roda 100 anos
 sem reforma, o mesmo aquecimento da previsão, para chegar ao regime do
 próprio ABM (margens, estoques, capital e crenças). Daí se separa em três
 cópias com os mesmos números aleatórios: sem reforma, com devolução uniforme
-e com devolução por isenção. Como na economia com leiloeiro e no Aiyagari,
-o que a reforma muda no orçamento do governo volta às famílias pelos pesos
-da devolução: a transferência da economia sem reforma, trimestre a
-trimestre, continua igual para todos, e a diferença segue os pesos.
+e com devolução por isenção.
 
-A economia flutua sozinha, e uma semente só mistura o efeito da lei com o
-ciclo; a média das sementes separa os dois.
+Só a receita do aumento da alíquota segue os pesos da devolução; o resto do
+orçamento, inclusive o que a base dos outros impostos perde com a reforma e
+as oscilações do ciclo, se divide igualmente entre todos. A regra principal
+do Aiyagari e do ABM com leiloeiro é outra (a transferência inteira segue os
+pesos), mas nela, aqui, o grupo que recebe a devolução absorveria também as
+diferenças de ciclo entre as cópias com e sem reforma. Para comparar, o
+Aiyagari é resolvido também com esta regra (equilibrio_geral/experimentos_ha.py,
+devolução "isenção, só a receita nova"), e o novo equilíbrio walrasiano de
+referência usa a mesma regra.
 
-Rode a partir da pasta Econometria/ (cerca de 10 minutos com 4 núcleos):
+A economia flutua sozinha e tem, de tempos em tempos, crises de desemprego;
+depois da separação, as cópias com e sem reforma passam por elas em datas
+diferentes. Uma semente só mistura o efeito da lei com o ciclo; a média de
+96 sementes separa os dois, com o erro-padrão que o resumo informa.
+
+Rode a partir da pasta Econometria/ (cerca de 20 minutos com 4 núcleos):
 
     python Python/macroeconomia/Politicas/Lei-15270/abm2_sem_leiloeiro/lei_sem_leiloeiro.py
 """
@@ -46,7 +55,7 @@ from lei_com_leiloeiro import DEVOLUCOES, resumo_bem_estar  # noqa: E402
 PASTA = Path(__file__).resolve().parent
 ANOS_LEI = 150
 AQUECIMENTO = 400        # trimestres sem reforma antes dela, como na previsão
-SEMENTES_LEI = range(48)
+SEMENTES_LEI = range(96)
 
 
 def _economia_da_lei(args):
@@ -62,27 +71,25 @@ def _economia_da_lei(args):
     inicio = DC.estado_inicial(eco0, X.Aprendizado(), n_familias, rng)
     inicio, _ = DC.simular(eco0, inicio, rng, aquecimento)
     estado_rng = rng.bit_generator.state
-    saida, base = {}, None
+    saida = {}
     for nome, eco in (("sem reforma", eco0), *reformas.items()):
         rng.bit_generator.state = estado_rng
         estado = copy.deepcopy(inicio)
         tipo = estado.tipo
         bem_estar, peso, linhas = np.zeros(n_familias), 1.0, []
-        for t in range(trimestres):
-            estado, registro = DC.trimestre(eco, estado, rng, par.g * D, par.gasto,
-                                            transferencia_base=None if base is None else base[t])
+        for _ in range(trimestres):
+            estado, registro = DC.trimestre(eco, estado, rng, par.g * D, par.gasto)
             bem_estar += peso * D * estado.c ** (1 - par.theta) / (1 - par.theta)
             peso *= desconto
             linhas.append(registro)
         saida[nome] = (pd.DataFrame(linhas), bem_estar, tipo)
-        if base is None:
-            base = saida[nome][0].transferencia.to_numpy()
     return semente, saida
 
 
 def lei(eco0: DC.Economia, aumento: float, sementes=SEMENTES_LEI, anos: int = ANOS_LEI,
         aquecimento: int = AQUECIMENTO, n_familias: int = N):
-    reformas = {nome: replace(eco0, cal=DC.reformada(eco0.cal, aumento, pesos))
+    reformas = {nome: replace(eco0, cal=DC.reformada(eco0.cal, aumento, pesos),
+                              tau_k_base=eco0.cal.par.tau_k)
                 for nome, pesos in DEVOLUCOES.items()}
     casos = [(eco0, reformas, s, 4 * anos, aquecimento, n_familias) for s in sementes]
     with ProcessPoolExecutor() as executor:

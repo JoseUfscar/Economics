@@ -58,7 +58,10 @@ def preparar(est: F.Estacionario, grades: F.Grades = F.Grades(),
     renda, par = est.renda, est.par
     pesos = np.ones(renda.estados) if est.pesos is None else np.asarray(est.pesos, float)
     pesos = pesos / (renda.pi @ pesos)
-    perfil = (1 - par.tau_w) * renda.z + (est.transferencia / est.w) * pesos
+    if est.reforma is None:
+        perfil = (1 - par.tau_w) * renda.z + (est.transferencia / est.w) * pesos
+    else:   # só a receita do aumento de tau_k segue os pesos (familias.rendas)
+        perfil = (1 - par.tau_w) * renda.z + (est.transferencia - est.reforma + est.reforma * pesos) / est.w
     tabela = F.TabelaPoliticas(par, renda, perfil, grades, lacunas, r_exatos=(est.r,))
     return Calibrada(est, pesos, tabela)
 

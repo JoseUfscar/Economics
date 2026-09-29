@@ -14,11 +14,17 @@ de duas formas:
     R$ 7.350; só a ponta de cima, onde o desconto já é pequeno, cai nos 10%
     com maior renda.
 
-Nas duas, toda a receita nova volta às famílias. Como a isenção custa menos
-que a receita nova (R$ 25,84 bi contra R$ 34,12 bi em 2026), uma terceira
-conta dá ao grupo intermediário só a fração 25,84/34,12 da transferência e
-divide o resto igualmente ("isenção, resto uniforme"). Ela entra no CSV, não
-nas figuras.
+Nas duas, a transferência inteira segue os pesos da devolução, inclusive o
+que a base dos outros impostos perde com a reforma. Duas contas a mais
+entram no CSV, não nas figuras:
+
+  - "isenção, resto uniforme": como a isenção custa menos que a receita nova
+    (R$ 25,84 bi contra R$ 34,12 bi em 2026), o grupo intermediário recebe
+    só a fração 25,84/34,12 da transferência, e o resto se divide igualmente;
+  - "isenção, só a receita nova": só a receita do aumento de tau_k vai para
+    o grupo intermediário, e o que a base dos outros impostos perde se
+    divide igualmente. É a regra do ABM sem leiloeiro, e serve de
+    comparação para ele.
 
 O modelo representativo (modelo.py) serve de comparação: nele todos perdem.
 
@@ -98,8 +104,13 @@ class Reforma:
 
 
 def reforma(eq0: EquilibrioHA, aumento: float, pesos, nome: str,
-            t: np.ndarray | None = None) -> Reforma:
-    gov1 = replace(eq0.gov, tau_k=eq0.gov.tau_k + aumento, pesos=pesos)
+            t: np.ndarray | None = None, so_receita_nova: bool = False) -> Reforma:
+    """
+    Aumento de tau_k de surpresa. Com `so_receita_nova`, só a receita do
+    aumento segue os pesos (aiyagari.Governo.tau_k_base).
+    """
+    gov1 = replace(eq0.gov, tau_k=eq0.gov.tau_k + aumento, pesos=pesos,
+                   tau_k_base=eq0.gov.tau_k if so_receita_nova else None)
     eq1 = equilibrio(eq0.eco, eq0.renda, gov1, eq0.grade)
     tr = transicao(eq0, gov1, eq1, t=t)
     return Reforma(nome, eq1, tr, ganho_bem_estar(tr.V0, eq0.familias.V, eq0.eco.theta))
@@ -265,13 +276,15 @@ def main() -> None:
         print(desigualdade(eq0).to_string(index=False, float_format="%.3f"))
 
     reformas = [reforma(eq0, base.choque, pesos, nome) for nome, pesos in VARIANTES.items()]
-    parcial = reforma(eq0, base.choque, pesos_isencao_parcial(eq0.renda.estacionaria),
-                      "isenção, resto uniforme")
+    extras = [reforma(eq0, base.choque, pesos_isencao_parcial(eq0.renda.estacionaria),
+                      "isenção, resto uniforme"),
+              reforma(eq0, base.choque, VARIANTES["isenção"], "isenção, só a receita nova",
+                      so_receita_nova=True)]
     ganho_ra = efeitos(base.eco_ra, base.pol_ra, base.choque, 0.8)["bem-estar, surpresa (%)"]
     resumos, tabelas = {}, []
-    for ref in reformas + [parcial]:
+    for ref in reformas + extras:
         resumo = resumo_bem_estar(eq0, ref)
-        if ref is not parcial:
+        if ref.nome in VARIANTES:
             resumos[ref.nome] = resumo
         tabelas.append(resumo.assign(devolucao=ref.nome,
                                      capital_longo_prazo=100 * (ref.eq1.K / eq0.K - 1)))

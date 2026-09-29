@@ -92,9 +92,14 @@ def referencia(par: F.Parametros, renda: F.Renda, capital_produto: float, gasto_
 
 
 def reformada(cal0: E.Calibrada, aumento: float, pesos) -> E.Calibrada:
+    """
+    O equilíbrio walrasiano depois do aumento de tau_k, com a mesma regra de
+    devolução da economia sem leiloeiro: só a receita do aumento segue os
+    pesos (`tau_k_base`), e o resto do orçamento se divide igualmente.
+    """
     par1 = replace(cal0.par, tau_k=cal0.par.tau_k + aumento)
     est1 = F.equilibrio(par1, cal0.renda, pesos, K_inicial=cal0.est.K,
-                        beneficio=desempregados(cal0.renda))
+                        beneficio=desempregados(cal0.renda), tau_k_base=cal0.par.tau_k)
     return E.preparar(est1, lacunas=LACUNAS)
 
 
@@ -138,6 +143,10 @@ class Comportamento:
                   sorteada com peso no tamanho (Lengnick, 2013)
       produtividade das firmas: AR(1) do log com persistência 0,95 por
                   trimestre e desvio-padrão estacionário 0,1
+      compras do governo e das firmas: divididas entre as firmas que ainda
+                  têm estoque, com peso nas vendas esperadas e no preço, com
+                  elasticidade 2 (elasticidade_institucional); escolha de
+                  modelagem, sem referência na literatura
     """
 
     firmas: int = 200
